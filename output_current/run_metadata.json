@@ -1,0 +1,19 @@
+{
+  "input": "data\\raw\\数据.xlsx",
+  "n_samples": 961,
+  "n_columns": 108,
+  "attention_flag_n": 846,
+  "logic_flag_n": 0,
+  "duplicate_flag_n": 0,
+  "straightline_flag_n": 61,
+  "cluster_best_k": 2,
+  "cluster_best_silhouette": 0.13293847621866647,
+  "ipa_priority_n": 1,
+  "input_format": "new961_64",
+  "source_pipeline": "run_questionnaire_analysis_v2",
+  "conversion_unknown_count": 0,
+  "conversion_unknown_rate": 0.0,
+  "conversion_other_text_count": 192,
+  "conversion_branch_conflict_count": 0,
+  "conversion_integrity": 1.0
+}

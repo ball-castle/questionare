@@ -1,0 +1,3 @@
+﻿calibration,expected_code,attention_abnormal_n,sensitivity_n,model_n,events,accuracy,auc,pseudo_r2,consistent_direction_n,reversed_direction_n,unknown_direction_n
+口径A_应选1,1,846,115,115,17,0.8608695652173913,0.8187274909963985,0.21020594583164565,3,5,0
+口径B_应选5,5,693,268,268,68,0.746268656716418,0.5986397058823529,0.024907703185614305,6,2,0

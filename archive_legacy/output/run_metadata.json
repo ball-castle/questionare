@@ -1,0 +1,12 @@
+{
+  "input": "原始数据_Amethyst.xlsx",
+  "n_samples": 813,
+  "n_columns": 108,
+  "attention_flag_n": 756,
+  "logic_flag_n": 0,
+  "duplicate_flag_n": 0,
+  "straightline_flag_n": 0,
+  "cluster_best_k": 2,
+  "cluster_best_silhouette": 0.16475414192499857,
+  "ipa_priority_n": 2
+}

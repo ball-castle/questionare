@@ -1,0 +1,83 @@
+{
+  "pipeline": "current_single_track",
+  "started_at": "2026-02-21T10:01:48.561019+00:00",
+  "input_xlsx": "data\\raw\\数据.xlsx",
+  "input_format": "new961_64",
+  "doc_path": "docs\\待填数据.docx",
+  "output_dir": "output_current",
+  "steps": [
+    {
+      "step": "analysis",
+      "command": [
+        "C:\\Users\\TSOU\\Desktop\\questionare_processiong\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\TSOU\\Desktop\\questionare_processiong\\scripts\\run_questionnaire_analysis_v2.py",
+        "--input-xlsx",
+        "data\\raw\\数据.xlsx",
+        "--input-format",
+        "new961_64",
+        "--output-dir",
+        "output_current"
+      ],
+      "started_at": "2026-02-21T10:01:48.561130+00:00",
+      "status": "ok",
+      "finished_at": "2026-02-21T10:01:51.978178+00:00"
+    },
+    {
+      "step": "boosters",
+      "command": [
+        "C:\\Users\\TSOU\\Desktop\\questionare_processiong\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\TSOU\\Desktop\\questionare_processiong\\scripts\\generate_award_boosters_v2.py",
+        "--tables-dir",
+        "output_current\\tables",
+        "--output-dir",
+        "output_current"
+      ],
+      "started_at": "2026-02-21T10:01:51.978269+00:00",
+      "status": "ok",
+      "finished_at": "2026-02-21T10:01:53.387538+00:00"
+    },
+    {
+      "step": "fill_pending_doc",
+      "command": [
+        "C:\\Users\\TSOU\\Desktop\\questionare_processiong\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\TSOU\\Desktop\\questionare_processiong\\scripts\\fill_pending_doc_v2.py",
+        "--doc-path",
+        "docs\\待填数据.docx",
+        "--tables-dir",
+        "output_current\\tables",
+        "--output-dir",
+        "output_current"
+      ],
+      "started_at": "2026-02-21T10:01:53.387630+00:00",
+      "status": "ok",
+      "finished_at": "2026-02-21T10:01:54.467474+00:00"
+    },
+    {
+      "step": "check_pending_doc_consistency",
+      "command": [
+        "C:\\Users\\TSOU\\Desktop\\questionare_processiong\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\TSOU\\Desktop\\questionare_processiong\\scripts\\check_pending_doc_consistency_v2.py",
+        "--doc-path",
+        "docs\\待填数据.docx",
+        "--raw-xlsx",
+        "data\\raw\\数据.xlsx",
+        "--tables-dir",
+        "output_current\\tables",
+        "--output-dir",
+        "output_current"
+      ],
+      "started_at": "2026-02-21T10:01:54.467568+00:00",
+      "status": "ok",
+      "finished_at": "2026-02-21T10:01:56.378858+00:00"
+    }
+  ],
+  "finished_at": "2026-02-21T10:01:56.378878+00:00",
+  "status": "ok",
+  "key_outputs": [
+    "output_current\\问卷数据处理与分析_结果摘要.txt",
+    "output_current\\tables\\待填数据_回填值清单.csv",
+    "output_current\\tables\\待填数据_待补项清单.csv",
+    "output_current\\tables\\待填数据_一致性核查报告.csv",
+    "output_current\\pipeline_manifest.json"
+  ]
+}
