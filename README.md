@@ -69,9 +69,9 @@ uv run python scripts/generate_ch6_ch7_report.py
 
 Notes:
 
-- Default outline path: project root `六七部分_国奖标准详细大纲_可直接扩写.md`
+- Default outline path: project root `六七大纲.md`
 - Missing input behavior default: `--missing-policy keep_placeholder`
-- Auto migration is enabled by default: when `output/` does not exist but `output_current/` exists, report command copies `output_current -> output` before audit/generation.
+- Auto migration is enabled by default: when `output_report/` does not exist but `output_current/` exists, report command copies `output_current -> output_report` before audit/generation.
 - `run_rescreen_to_data.py` and `run_reliability_validity_880.py` default to idempotent mode: if key outputs already exist, they print `skipped` and do nothing.
 - Add `--force` to either script to overwrite existing artifacts.
 

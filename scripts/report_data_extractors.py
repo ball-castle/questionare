@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 from pathlib import Path
 
 
@@ -25,6 +26,16 @@ def to_float(value: str | None) -> float:
 
 def to_int(value: str | None) -> int:
     return int(round(to_float(value)))
+
+
+def to_float_nan(value: str | None) -> float:
+    s = str(value or "").strip()
+    if not s:
+        return float("nan")
+    try:
+        return float(s)
+    except Exception:
+        return float("nan")
 
 
 def pct(value: float, digits: int = 2) -> str:
@@ -118,6 +129,44 @@ def _missing(path: Path, missing_policy: str, warnings: list[str]) -> None:
     warnings.append(msg)
 
 
+def _row_mean(row: dict[str, str], cols_1b: list[int]) -> float:
+    vals = [to_float_nan(row.get(f"C{c:03d}")) for c in cols_1b]
+    valid = [v for v in vals if not math.isnan(v)]
+    if not valid:
+        return float("nan")
+    return float(sum(valid) / len(valid))
+
+
+def _corr(x: list[float], y: list[float]) -> dict[str, float]:
+    pairs = [(a, b) for a, b in zip(x, y) if not math.isnan(a) and not math.isnan(b)]
+    n = len(pairs)
+    if n < 3:
+        return {"r": float("nan"), "n": float(n)}
+    xv = [p[0] for p in pairs]
+    yv = [p[1] for p in pairs]
+    mx = sum(xv) / n
+    my = sum(yv) / n
+    cov = sum((a - mx) * (b - my) for a, b in pairs)
+    var_x = sum((a - mx) ** 2 for a in xv)
+    var_y = sum((b - my) ** 2 for b in yv)
+    if var_x <= 0 or var_y <= 0:
+        return {"r": float("nan"), "n": float(n)}
+    r = cov / math.sqrt(var_x * var_y)
+    return {"r": float(r), "n": float(n)}
+
+
+def _group_means(metric: list[float], group_code: list[float], code: int) -> dict[str, float]:
+    vals = [
+        m
+        for m, g in zip(metric, group_code)
+        if (not math.isnan(m)) and (not math.isnan(g)) and int(round(g)) == int(code)
+    ]
+    n = len(vals)
+    if n == 0:
+        return {"mean": float("nan"), "n": 0.0}
+    return {"mean": float(sum(vals) / n), "n": float(n)}
+
+
 def extract_report_data(
     tables_dir: Path,
     figures_dir: Path,
@@ -174,9 +223,63 @@ def extract_report_data(
     action_rows = read_csv(tables_dir / "建议落地行动矩阵.csv") if (tables_dir / "建议落地行动矩阵.csv").exists() else []
     problem_rows = read_csv(tables_dir / "问题-证据-建议对照表.csv") if (tables_dir / "问题-证据-建议对照表.csv").exists() else []
     sem_map_rows = read_csv(tables_dir / "假设变量模型映射表.csv") if (tables_dir / "假设变量模型映射表.csv").exists() else []
+    clean_rows = read_csv(tables_dir / "survey_clean.csv") if (tables_dir / "survey_clean.csv").exists() else []
 
     run_meta_path = tables_dir.parent / "run_metadata.json"
     run_meta = json.loads(run_meta_path.read_text(encoding="utf-8")) if run_meta_path.exists() else {}
+
+    def _meta_int(key: str) -> int:
+        try:
+            return int(float(str(run_meta.get(key, "")).strip()))
+        except Exception:
+            return 0
+
+    raw_n_meta = _meta_int("n_samples")
+    main_n_meta = _meta_int("remain_n_revised")
+
+    if raw_n_meta <= 0 or main_n_meta <= 0:
+        flow_rows = []
+        for flow_name in ["样本流转表_重筛.csv", "样本流转表.csv"]:
+            p = tables_dir / flow_name
+            if p.exists():
+                flow_rows = read_csv(p)
+                break
+        if flow_rows:
+            for r in flow_rows:
+                step = str(r.get("step", "")).strip()
+                n_val = to_int(r.get("n"))
+                if step == "raw_input" and raw_n_meta <= 0:
+                    raw_n_meta = n_val
+                if step in {"remain_revised", "main_analysis"} and main_n_meta <= 0:
+                    main_n_meta = n_val
+
+    if main_n_meta <= 0:
+        main_n_meta = len(clean_rows)
+    if raw_n_meta <= 0:
+        raw_n_meta = main_n_meta
+    if not run_meta.get("quality_profile"):
+        run_meta["quality_profile"] = "balanced_v20260221"
+    run_meta["n_samples"] = raw_n_meta
+    run_meta["remain_n_revised"] = main_n_meta
+
+    perception_vec = [_row_mean(r, list(range(52, 64)) + [65]) for r in clean_rows]
+    cognition_vec = [_row_mean(r, list(range(86, 90))) for r in clean_rows]
+    intention_vec = [_row_mean(r, [90, 91]) for r in clean_rows]
+    performance_vec = [_row_mean(r, list(range(76, 86))) for r in clean_rows]
+    q8_vec = [to_float_nan(r.get("C008")) for r in clean_rows]
+
+    corr_s_o = _corr(perception_vec, cognition_vec)
+    corr_o_r = _corr(cognition_vec, intention_vec)
+    corr_s_r = _corr(perception_vec, intention_vec)
+    corr_perf_r = _corr(performance_vec, intention_vec)
+
+    visit_yes = _group_means(intention_vec, q8_vec, 1)
+    visit_no = _group_means(intention_vec, q8_vec, 2)
+    visit_gap = (
+        float(visit_yes["mean"] - visit_no["mean"])
+        if (not math.isnan(visit_yes["mean"]) and not math.isnan(visit_no["mean"]))
+        else float("nan")
+    )
 
     single_map: dict[tuple[int, int], dict[str, float]] = {}
     for row in single_rows:
@@ -290,6 +393,15 @@ def extract_report_data(
             "q8_sens": q8_sens,
             "reversed_n": reversed_n,
             "dual_summary": dual_summary,
+        },
+        "mechanism": {
+            "corr_s_o": corr_s_o,
+            "corr_o_r": corr_o_r,
+            "corr_s_r": corr_s_r,
+            "corr_perf_r": corr_perf_r,
+            "visit_yes": visit_yes,
+            "visit_no": visit_no,
+            "visit_gap": visit_gap,
         },
         "cluster": {
             "profiles": cluster_profiles,

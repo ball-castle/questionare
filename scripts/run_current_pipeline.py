@@ -54,7 +54,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--report-outline-md",
         default=None,
-        help="Optional override for chapter 6/7 outline markdown path; default <project-root>/六七部分_国奖标准详细大纲_可直接扩写.md.",
+        help="Optional override for chapter 6/7 outline markdown path; default <project-root>/六七大纲.md.",
     )
     parser.add_argument(
         "--quality-profile",
@@ -149,7 +149,7 @@ def main() -> None:
     )
 
     if args.build_report:
-        report_outline = Path(args.report_outline_md) if args.report_outline_md else (root.parent / "六七部分_国奖标准详细大纲_可直接扩写.md")
+        report_outline = Path(args.report_outline_md) if args.report_outline_md else (root.parent / "六七大纲.md")
         run_step(
             "report_generation",
             [

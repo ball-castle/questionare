@@ -10,11 +10,13 @@ import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
+from report_data_extractors import extract_report_data
 from report_docx_exporter import export_docx
 from report_input_audit import audit_required_inputs
 from report_outline_renderer import build_outline_report
+from report_template_renderer import render_markdown, render_report_content
 
-OUTLINE_DEFAULT = "六七部分_国奖标准详细大纲_可直接扩写.md"
+OUTLINE_DEFAULT = "六七大纲.md"
 
 
 def now_iso() -> str:
@@ -38,17 +40,17 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--tables-dir",
-        default="output/tables",
+        default="output_report/tables",
         help="Tables directory produced by analysis pipeline.",
     )
     parser.add_argument(
         "--figures-dir",
-        default="output/figures",
+        default="output_report/figures",
         help="Figures directory produced by analysis pipeline.",
     )
     parser.add_argument(
         "--output-dir",
-        default="output/reports",
+        default="output_report",
         help="Report output directory.",
     )
     parser.add_argument(
@@ -71,7 +73,13 @@ def parse_args() -> argparse.Namespace:
         "--auto-migrate-output-current",
         action=argparse.BooleanOptionalAction,
         default=True,
-        help="Auto-copy output_current to output when output does not exist yet.",
+        help="Auto-copy output_current to output_report when output_report does not exist yet.",
+    )
+    parser.add_argument(
+        "--render-mode",
+        default="data_rich",
+        choices=["data_rich", "outline"],
+        help="Render mode: data_rich (recommended) or outline (verbatim outline copy).",
     )
     return parser.parse_args()
 
@@ -90,7 +98,7 @@ def maybe_migrate_output_current(tables_dir: Path, enabled: bool) -> bool:
     if not enabled:
         return False
     output_root = tables_dir.parent
-    if output_root.name != "output":
+    if output_root.name not in {"output", "output_report"}:
         return False
     legacy_root = output_root.parent / "output_current"
     if output_root.exists() or not legacy_root.exists():
@@ -134,6 +142,7 @@ def main() -> None:
             "base_name": args.base_name,
             "missing_policy": args.missing_policy,
             "prepare_only": True,
+            "render_mode": args.render_mode,
             "auto_migrate_output_current": bool(args.auto_migrate_output_current),
             "migration_performed": migration_performed,
             "input_audit_path": str(audit_path),
@@ -148,11 +157,25 @@ def main() -> None:
         print(f"report_prepare_done: audit={audit_path} log={log_path}")
         return
 
-    content, md_text = build_outline_report(
-        outline_md=outline_md,
-        title=args.base_name,
-        missing_items=missing_items,
-    )
+    if args.render_mode == "outline":
+        content, md_text = build_outline_report(
+            outline_md=outline_md,
+            title=args.base_name,
+            missing_items=missing_items,
+        )
+    else:
+        report_data = extract_report_data(
+            tables_dir=tables_dir,
+            figures_dir=figures_dir,
+            outline_md=outline_md,
+            missing_policy=args.missing_policy,
+        )
+        content = render_report_content(
+            data=report_data,
+            tables_dir=tables_dir,
+            figures_dir=figures_dir,
+        )
+        md_text = render_markdown(content)
 
     md_path = output_dir / f"{args.base_name}.md"
     docx_path = output_dir / f"{args.base_name}.docx"
@@ -185,6 +208,7 @@ def main() -> None:
         "base_name": args.base_name,
         "missing_policy": args.missing_policy,
         "prepare_only": False,
+        "render_mode": args.render_mode,
         "auto_migrate_output_current": bool(args.auto_migrate_output_current),
         "migration_performed": migration_performed,
         "input_audit_path": str(audit_path),

@@ -26,8 +26,10 @@ def _looks_like_evidence_path(path_text: str) -> bool:
 
 def normalize_outline_text(text: str) -> str:
     normalized = text.replace("\r\n", "\n")
-    normalized = normalized.replace("output_current/", "output/")
-    normalized = normalized.replace("output_current\\", "output\\")
+    normalized = normalized.replace("output_current/", "output_report/")
+    normalized = normalized.replace("output_current\\", "output_report\\")
+    normalized = normalized.replace("output/", "output_report/")
+    normalized = normalized.replace("output\\", "output_report\\")
     return normalized
 
 
@@ -149,8 +151,10 @@ def extract_evidence_rows(markdown_text: str) -> list[dict[str, str]]:
                 path_text = token.strip().strip("`").strip()
                 if not path_text:
                     continue
-                path_text = path_text.replace("output_current/", "output/")
-                path_text = path_text.replace("output_current\\", "output\\")
+                path_text = path_text.replace("output_current/", "output_report/")
+                path_text = path_text.replace("output_current\\", "output_report\\")
+                path_text = path_text.replace("output/", "output_report/")
+                path_text = path_text.replace("output\\", "output_report\\")
                 if not _looks_like_evidence_path(path_text):
                     continue
                 evidence_path = _fmt_path(path_text)

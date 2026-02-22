@@ -48,6 +48,22 @@ def export_docx(content: dict[str, Any], output_path: Path) -> None:
                     p.runs[0].italic = True
             else:
                 doc.add_paragraph(f"图像缺失：{caption}（{path.as_posix()}）")
+        elif btype == "table":
+            caption = str(block.get("caption", ""))
+            headers = [str(h) for h in block.get("headers", [])]
+            rows = [[str(c) for c in row] for row in block.get("rows", [])]
+            if caption:
+                p = doc.add_paragraph(caption)
+                if p.runs:
+                    p.runs[0].italic = True
+            if headers:
+                tb = doc.add_table(rows=1 + len(rows), cols=len(headers))
+                tb.style = "Table Grid"
+                for j, h in enumerate(headers):
+                    tb.cell(0, j).text = h
+                for i, row in enumerate(rows, start=1):
+                    for j in range(len(headers)):
+                        tb.cell(i, j).text = row[j] if j < len(row) else ""
 
     evidence_rows = content.get("evidence_rows", [])
     if evidence_rows:
