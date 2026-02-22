@@ -5,18 +5,30 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import re
 import zipfile
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
+import matplotlib
 import numpy as np
 
 from qp_stats import cronbach_alpha
 
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS = {"w": W_NS}
+AGE_ORDER = [1, 3, 2, 4, 5]
+AGE_LABELS = {
+    1: "18岁以下",
+    3: "18-25岁",
+    2: "26-45岁",
+    4: "46-64岁",
+    5: "65岁及以上",
+}
 
 
 def qn(tag: str) -> str:
@@ -93,10 +105,31 @@ def alpha_grade(alpha: float) -> str:
     return "一般"
 
 
-def _load_current_metrics(tables_dir: Path):
+def _to_int(x):
+    s = str(x or "").strip()
+    if s == "":
+        return None
+    try:
+        return int(float(s))
+    except Exception:
+        return None
+
+
+def _load_run_metadata(output_dir: Path):
+    meta_path = output_dir / "run_metadata.json"
+    if not meta_path.exists():
+        return {}
+    try:
+        return json.loads(meta_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _load_current_metrics(tables_dir: Path, output_dir: Path):
     freq_rows = read_csv(tables_dir / "单选题频数百分比表.csv")
     val_rows = read_csv(tables_dir / "效度分析表.csv")
     clean_rows = read_csv(tables_dir / "survey_clean.csv")
+    run_meta = _load_run_metadata(output_dir)
 
     def freq(col_idx: int, code: int):
         for r in freq_rows:
@@ -110,6 +143,12 @@ def _load_current_metrics(tables_dir: Path):
     q4 = {k: freq(4, k) for k in [1, 2, 3, 4, 5, 6, 7, 8]}
     q5 = {k: freq(5, k) for k in [1, 2, 3, 4, 5]}
     q8 = {k: freq(8, k) for k in [1, 2]}
+    age_gender_counts = {k: {1: 0, 2: 0} for k in AGE_ORDER}
+    for r in clean_rows:
+        age_code = _to_int(r.get("C002"))
+        sex_code = _to_int(r.get("C001"))
+        if age_code in age_gender_counts and sex_code in [1, 2]:
+            age_gender_counts[age_code][sex_code] += 1
 
     cols = [f"C{i:03d}" for i in range(1, 109)]
     num = np.full((len(clean_rows), len(cols)), np.nan, dtype=float)
@@ -151,43 +190,74 @@ def _load_current_metrics(tables_dir: Path):
         "p": "<0.001" if float(val.get("bartlett_p", 1.0)) < 0.001 else f"{float(val.get('bartlett_p', 1.0)):.3f}",
     }
 
+    raw_n = int(run_meta.get("n_samples", len(clean_rows)))
+    valid_n = int(run_meta.get("remain_n_revised", len(clean_rows)))
+    if valid_n <= 0:
+        valid_n = len(clean_rows)
+    valid_rate = 100.0 * float(valid_n) / float(raw_n) if raw_n > 0 else 0.0
+
     return {
-        "n_samples": len(clean_rows),
+        "raw_n": raw_n,
+        "valid_n": valid_n,
+        "valid_rate": valid_rate,
         "q1": q1,
         "q2": q2,
         "q3": q3,
         "q4": q4,
         "q5": q5,
         "q8": q8,
+        "age_order": AGE_ORDER,
+        "age_labels": AGE_LABELS,
+        "age_gender_counts": age_gender_counts,
         "reliability": rel_rows,
         "validity": validity,
     }
 
 
 def apply_paragraph_replacements(root, fill_rows, m):
-    n = m["n_samples"]
+    raw_n = m["raw_n"]
+    valid_n = m["valid_n"]
+    valid_rate = m["valid_rate"]
     q8_yes, q8_no = m["q8"][1]["count"], m["q8"][2]["count"]
     q1_m, q1_f = m["q1"][1], m["q1"][2]
     q2 = m["q2"]
+    age_desc = "，".join([f"{AGE_LABELS[age_code]}占{q2[age_code]['pct']:.2f}%" for age_code in AGE_ORDER])
 
-    p_alloc = re.compile(r"累计发放问卷\d+份，回收有效问卷\d+份（到访\d+份、未到访\d+份），有效回收率[0-9.]+%")
-    p_overall = re.compile(r"本次调查累计发放问卷\d+份，有效问卷\d+份，问卷有效率[0-9.]+%")
-    p_gender_age = re.compile(
-        r"本次调查回收有效问卷共\d+份，在所有受访者中，男女比例为\d+:\d+（[0-9.]+%:[0-9.]+%）[；;]年龄结构中，编码\d+占[0-9.]+%，编码\d+占[0-9.]+%，编码\d+占[0-9.]+%"
+    p_alloc_old = re.compile(r"累计发放(?:问卷)?\d+份，回收有效问卷\d+份（到访\d+份、未到访\d+份），有效回收率[0-9.]+%[。]?")
+    p_alloc_new = re.compile(
+        r"累计发放(?:问卷)?\d+份，回收问卷\d+份，质控后有效问卷\d+份（到访\d+份、未到访\d+份），有效率[0-9.]+%[。]?"
+    )
+    p_overall_old = re.compile(r"本次调查(?:累计|共)?发放问卷\d+份，有效问卷\d+份，问卷有效率[0-9.]+%[。]?")
+    p_overall_new = re.compile(
+        r"本次调查累计发放问卷\d+份，回收问卷\d+份，质控后有效问卷\d+份（有效率[0-9.]+%）[。]?"
+    )
+    p_gender_age_code = re.compile(
+        r"本次调查回收有效问卷共\d+份，在所有受访者中，男女比例为\d+:\d+（[0-9.]+%:[0-9.]+%）[；;]年龄结构中，编码\d+占[0-9.]+%，编码\d+占[0-9.]+%，编码\d+占[0-9.]+%[。]?"
+    )
+    p_gender_age_legacy = re.compile(
+        r"本次调查回收有效问卷共\d+份，在所有受访者中，男女比例为\d+:\d+，所占比例基本一致[；;]从受访者年龄性别分布图可知，30岁以下青年群体占[0-9.]+%，30岁以上中年群体占[0-9.]+%，调查基本覆盖50岁以下全年龄段[。]?"
+    )
+    p_gender_age_five = re.compile(
+        r"本次调查回收有效问卷共\d+份，在所有受访者中，男女比例为\d+:\d+（[0-9.]+%:[0-9.]+%）[。；;](?:从年龄分布看，)?18岁以下占[0-9.]+%，18-25岁占[0-9.]+%，26-45岁占[0-9.]+%，46-64岁占[0-9.]+%，65岁及以上占[0-9.]+%[。]?"
     )
 
-    canonical_alloc = f"正式调查按既定配额实施，累计发放问卷{n}份，回收有效问卷{n}份（到访{q8_yes}份、未到访{q8_no}份），有效回收率100.00%。"
-    canonical_overall = f"本次调查累计发放问卷{n}份，有效问卷{n}份，问卷有效率100.00%。以下为有效问卷样本的结构分析。"
+    canonical_alloc = (
+        f"正式调查按既定配额实施，累计发放问卷{raw_n}份，回收问卷{raw_n}份，"
+        f"质控后有效问卷{valid_n}份（到访{q8_yes}份、未到访{q8_no}份），有效率{valid_rate:.2f}%。"
+    )
+    canonical_overall = (
+        f"本次调查累计发放问卷{raw_n}份，回收问卷{raw_n}份，"
+        f"质控后有效问卷{valid_n}份（有效率{valid_rate:.2f}%）。以下为有效问卷样本的结构分析。"
+    )
     canonical_gender_age = (
-        f"本次调查回收有效问卷共{n}份，在所有受访者中，男女比例为{q1_m['count']}:{q1_f['count']}"
-        f"（{q1_m['pct']:.2f}%:{q1_f['pct']:.2f}%）；年龄结构中，编码3占{q2[3]['pct']:.2f}%，"
-        f"编码2占{q2[2]['pct']:.2f}%，编码4占{q2[4]['pct']:.2f}%。"
+        f"本次调查回收有效问卷共{valid_n}份，在所有受访者中，男女比例为{q1_m['count']}:{q1_f['count']}"
+        f"（{q1_m['pct']:.2f}%:{q1_f['pct']:.2f}%）。从年龄分布看，{age_desc}。"
     )
 
     reps = [
         (
             "通过网络平台及街区现场发放，共发放问卷600份，共有有效问卷526份，有效率为87.67%。",
-            f"通过网络平台及街区现场发放，累计发放问卷{n}份，回收有效问卷{n}份（到访{q8_yes}份、未到访{q8_no}份），有效回收率100.00%。",
+            f"通过网络平台及街区现场发放，累计发放问卷{raw_n}份，回收问卷{raw_n}份，质控后有效问卷{valid_n}份（到访{q8_yes}份、未到访{q8_no}份），有效率{valid_rate:.2f}%。",
             "统一当前口径（正式调查回收）",
         ),
         (
@@ -221,33 +291,33 @@ def apply_paragraph_replacements(root, fill_rows, m):
         old_text, _ = get_para_text(p)
         if not old_text:
             continue
-        if p_alloc.search(old_text):
+        if p_alloc_old.search(old_text) or p_alloc_new.search(old_text):
             set_para_text(p, canonical_alloc)
             fill_rows.append(
                 {
                     "location": "paragraph",
                     "old_value": old_text,
                     "new_value": canonical_alloc,
-                    "source_table": "单选题频数百分比表.csv(Q8)",
-                    "calculation_rule": "正则刷新正式调查配额段落",
+                    "source_table": "run_metadata.json + 单选题频数百分比表.csv(Q8)",
+                    "calculation_rule": "正则刷新正式调查配额段落（分母=raw_n）",
                 }
             )
             alloc_done = True
             continue
-        if p_overall.search(old_text):
+        if p_overall_old.search(old_text) or p_overall_new.search(old_text):
             set_para_text(p, canonical_overall)
             fill_rows.append(
                 {
                     "location": "paragraph",
                     "old_value": old_text,
                     "new_value": canonical_overall,
-                    "source_table": "survey_clean.csv",
-                    "calculation_rule": "正则刷新样本总量段落",
+                    "source_table": "run_metadata.json",
+                    "calculation_rule": "正则刷新样本总量段落（分母=raw_n）",
                 }
             )
             overall_done = True
             continue
-        if p_gender_age.search(old_text):
+        if p_gender_age_code.search(old_text) or p_gender_age_legacy.search(old_text) or p_gender_age_five.search(old_text):
             set_para_text(p, canonical_gender_age)
             fill_rows.append(
                 {
@@ -417,7 +487,8 @@ def fill_table_4_formal_validity(tbl, fill_rows, metrics):
 def fill_table_5_sample_structure(tbl, fill_rows, metrics):
     rows = table_rows(tbl)
     q3, q4, q5 = metrics["q3"], metrics["q4"], metrics["q5"]
-    n = metrics["n_samples"]
+    n = metrics["valid_n"]
+    raw_n = metrics["raw_n"]
 
     def fill_row(r, var_text, attr, count, pct, total):
         if r >= len(rows):
@@ -495,11 +566,113 @@ def fill_table_5_sample_structure(tbl, fill_rows, metrics):
                     "location": "table5_r20_c2",
                     "old_value": old2,
                     "new_value": str(n),
-                    "source_table": "survey_clean.csv",
-                    "calculation_rule": "有效样本总数",
+                    "source_table": "run_metadata.json + survey_clean.csv",
+                    "calculation_rule": f"有效样本总数（质控后；分母=raw_n={raw_n}）",
                 },
             ]
         )
+
+
+def _sample_structure_rows(metrics):
+    q3, q4, q5 = metrics["q3"], metrics["q4"], metrics["q5"]
+    n = metrics["valid_n"]
+    rows = []
+
+    def add_row(var_name, attr, count, pct, total):
+        rows.append(
+            {
+                "变量": var_name,
+                "属性": attr,
+                "人数": str(count),
+                "比例": f"{pct:.2f}%",
+                "总计": total,
+            }
+        )
+
+    add_row("文化程度", "初中及以下", q3[1]["count"], q3[1]["pct"], "100%")
+    add_row("", "中专/高中", q3[2]["count"], q3[2]["pct"], "")
+    add_row("", "大专", q3[3]["count"], q3[3]["pct"], "")
+    add_row("", "本科", q3[4]["count"], q3[4]["pct"], "")
+    add_row("", "硕士及以上", q3[5]["count"], q3[5]["pct"], "")
+
+    add_row("职业", "学生", q4[1]["count"], q4[1]["pct"], "100%")
+    add_row("", "企业/公司职员", q4[2]["count"], q4[2]["pct"], "")
+    add_row("", "事业单位人员/公务员", q4[3]["count"], q4[3]["pct"], "")
+    add_row("", "自由职业者", q4[4]["count"], q4[4]["pct"], "")
+    add_row("", "个体经营者", q4[5]["count"], q4[5]["pct"], "")
+    add_row("", "服务业从业者", q4[6]["count"], q4[6]["pct"], "")
+    add_row("", "离退休人员", q4[7]["count"], q4[7]["pct"], "")
+    add_row("", "其他", q4[8]["count"], q4[8]["pct"], "")
+
+    add_row("月收入", "3000元以下", q5[1]["count"], q5[1]["pct"], "100%")
+    add_row("", "3001-5000元", q5[2]["count"], q5[2]["pct"], "")
+    add_row("", "5001-8000元", q5[3]["count"], q5[3]["pct"], "")
+    add_row("", "8001-15000元", q5[4]["count"], q5[4]["pct"], "")
+    add_row("", "15000元以上", q5[5]["count"], q5[5]["pct"], "")
+
+    rows.append({"变量": "有效填写人次", "属性": str(n), "人数": "", "比例": "", "总计": ""})
+    return rows
+
+
+def write_table_3_6_csv(metrics, out_dir: Path):
+    out_path = out_dir / "tables" / "表3-6_受访者基本信息频数表.csv"
+    rows = _sample_structure_rows(metrics)
+    write_dict_csv(out_path, ["变量", "属性", "人数", "比例", "总计"], rows)
+    return out_path
+
+
+def write_age_gender_artifacts(metrics, out_dir: Path):
+    table_path = out_dir / "tables" / "年龄性别分布_频数表.csv"
+    fig_path = out_dir / "figures" / "年龄段人数_性别堆叠图.png"
+    ensure_parent(table_path)
+    ensure_parent(fig_path)
+
+    valid_n = metrics["valid_n"]
+    age_gender_counts = metrics["age_gender_counts"]
+    rows = []
+    male_vals = []
+    female_vals = []
+    age_labels = []
+
+    for age_code in AGE_ORDER:
+        male_n = int(age_gender_counts.get(age_code, {}).get(1, 0))
+        female_n = int(age_gender_counts.get(age_code, {}).get(2, 0))
+        total_n = male_n + female_n
+        pct = 100.0 * float(total_n) / float(valid_n) if valid_n > 0 else 0.0
+        age_label = AGE_LABELS[age_code]
+        rows.append(
+            {
+                "年龄编码": str(age_code),
+                "年龄段": age_label,
+                "男": str(male_n),
+                "女": str(female_n),
+                "合计": str(total_n),
+                "占比": f"{pct:.2f}%",
+            }
+        )
+        age_labels.append(age_label)
+        male_vals.append(male_n)
+        female_vals.append(female_n)
+
+    write_dict_csv(table_path, ["年龄编码", "年龄段", "男", "女", "合计", "占比"], rows)
+
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei", "Arial Unicode MS", "DejaVu Sans"]
+    plt.rcParams["axes.unicode_minus"] = False
+    y = np.arange(len(age_labels))
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.barh(y, male_vals, color="#BFE3C0", label="男")
+    ax.barh(y, female_vals, left=male_vals, color="#2E7D32", label="女")
+    ax.set_yticks(y, age_labels)
+    ax.set_xlabel("人数")
+    ax.set_ylabel("年龄段")
+    ax.set_title("各年龄段人数（按性别堆叠）")
+    ax.legend(frameon=False)
+    ax.grid(axis="x", linestyle="--", alpha=0.35)
+    ax.invert_yaxis()
+    fig.tight_layout()
+    fig.savefig(fig_path, dpi=220)
+    plt.close(fig)
+    return table_path, fig_path
 
 
 def scan_left_numbers(root):
@@ -529,7 +702,7 @@ def main():
     out_pending = out_dir / "tables" / "待填数据_待补项清单.csv"
     out_check = out_dir / "tables" / "待填数据_回填校验报告.txt"
 
-    metrics = _load_current_metrics(tables_dir)
+    metrics = _load_current_metrics(tables_dir, out_dir)
     fill_rows = []
     pending_rows = []
 
@@ -548,6 +721,33 @@ def main():
     fill_table_3_formal_reliability(tables[2], fill_rows, metrics)
     fill_table_4_formal_validity(tables[3], fill_rows, metrics)
     fill_table_5_sample_structure(tables[4], fill_rows, metrics)
+    table36_path = write_table_3_6_csv(metrics, out_dir)
+    age_table_path, age_fig_path = write_age_gender_artifacts(metrics, out_dir)
+    fill_rows.extend(
+        [
+            {
+                "location": "artifact.table3_6_csv",
+                "old_value": "(n/a)",
+                "new_value": str(table36_path),
+                "source_table": "单选题频数百分比表.csv(Q3,Q4,Q5)",
+                "calculation_rule": "导出表3-6频数表CSV",
+            },
+            {
+                "location": "artifact.age_gender_csv",
+                "old_value": "(n/a)",
+                "new_value": str(age_table_path),
+                "source_table": "survey_clean.csv(C001,C002)",
+                "calculation_rule": "导出年龄×性别频数CSV",
+            },
+            {
+                "location": "artifact.age_gender_figure",
+                "old_value": "(n/a)",
+                "new_value": str(age_fig_path),
+                "source_table": "survey_clean.csv(C001,C002)",
+                "calculation_rule": "导出年龄段人数性别堆叠图",
+            },
+        ]
+    )
 
     pending_rows.append(
         {

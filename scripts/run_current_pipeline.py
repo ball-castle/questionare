@@ -45,7 +45,23 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run current single-track questionnaire pipeline.")
     parser.add_argument("--input-xlsx", required=True, help="Path to input questionnaire xlsx.")
     parser.add_argument("--doc-path", required=True, help="Path to pending docx for fill/check.")
-    parser.add_argument("--output-dir", default="output_current", help="Output directory.")
+    parser.add_argument("--output-dir", default="output", help="Output directory.")
+    parser.add_argument(
+        "--build-report",
+        action="store_true",
+        help="Whether to generate chapter 6/7 integrated report (markdown + docx) under <output-dir>/reports.",
+    )
+    parser.add_argument(
+        "--report-outline-md",
+        default=None,
+        help="Optional override for chapter 6/7 outline markdown path; default <project-root>/六七部分_国奖标准详细大纲_可直接扩写.md.",
+    )
+    parser.add_argument(
+        "--quality-profile",
+        default="balanced_v20260221",
+        choices=["balanced_v20260221", "legacy_balanced"],
+        help="Quality filtering profile passed to analysis step.",
+    )
     return parser.parse_args()
 
 
@@ -67,6 +83,7 @@ def main() -> None:
         "started_at": now_iso(),
         "input_xlsx": str(input_xlsx),
         "input_format": input_format,
+        "quality_profile": args.quality_profile,
         "doc_path": str(doc_path),
         "output_dir": str(output_dir),
         "steps": [],
@@ -81,6 +98,8 @@ def main() -> None:
             str(input_xlsx),
             "--input-format",
             input_format,
+            "--quality-profile",
+            args.quality_profile,
             "--output-dir",
             str(output_dir),
         ],
@@ -129,6 +148,29 @@ def main() -> None:
         manifest,
     )
 
+    if args.build_report:
+        report_outline = Path(args.report_outline_md) if args.report_outline_md else (root.parent / "六七部分_国奖标准详细大纲_可直接扩写.md")
+        run_step(
+            "report_generation",
+            [
+                py,
+                str(root / "generate_ch6_ch7_report.py"),
+                "--outline-md",
+                str(report_outline),
+                "--tables-dir",
+                str(output_dir / "tables"),
+                "--figures-dir",
+                str(output_dir / "figures"),
+                "--output-dir",
+                str(output_dir / "reports"),
+                "--base-name",
+                "六七部分_完整报告",
+                "--missing-policy",
+                "keep_placeholder",
+            ],
+            manifest,
+        )
+
     manifest["finished_at"] = now_iso()
     manifest["status"] = "ok"
     manifest["key_outputs"] = [
@@ -138,6 +180,16 @@ def main() -> None:
         str(output_dir / "tables" / "待填数据_一致性核查报告.csv"),
         str(output_dir / "pipeline_manifest.json"),
     ]
+    if args.build_report:
+        manifest["key_outputs"].extend(
+            [
+                str(output_dir / "reports" / "六七部分_完整报告.md"),
+                str(output_dir / "reports" / "六七部分_完整报告.docx"),
+                str(output_dir / "reports" / "六七章_证据索引.csv"),
+                str(output_dir / "reports" / "六七章_生成日志.json"),
+                str(output_dir / "reports" / "六七部分_输入核查报告.json"),
+            ]
+        )
 
     (output_dir / "pipeline_manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"current_pipeline_done: out={output_dir}")
@@ -145,4 +197,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

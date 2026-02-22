@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import re
 import zipfile
 from pathlib import Path
@@ -19,6 +20,14 @@ from qp_stats import cronbach_alpha, kmo_bartlett, freq_table
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS = {"w": W_NS}
+AGE_ORDER = [1, 3, 2, 4, 5]
+AGE_LABELS = {
+    1: "18岁以下",
+    3: "18-25岁",
+    2: "26-45岁",
+    4: "46-64岁",
+    5: "65岁及以上",
+}
 
 
 def norm_text(s: str) -> str:
@@ -73,6 +82,25 @@ def read_csv(path: Path):
         return list(csv.DictReader(f))
 
 
+def to_float(s):
+    if s is None:
+        return np.nan
+    s = str(s).strip()
+    if s == "":
+        return np.nan
+    try:
+        return float(s)
+    except Exception:
+        return np.nan
+
+
+def to_int_text(s):
+    v = to_float(s)
+    if np.isnan(v):
+        return 0
+    return int(v)
+
+
 def alpha_grade(alpha):
     if alpha >= 0.8:
         return "良好"
@@ -86,6 +114,20 @@ def freq_as_dict(vec):
     for r in freq_table(vec):
         out[int(r["code"])] = {"count": int(r["count"]), "pct": float(r["pct"])}
     return out
+
+
+def age_gender_cross(num):
+    cross = {age_code: {1: 0, 2: 0} for age_code in AGE_ORDER}
+    for row in num:
+        age_val = row[1]
+        sex_val = row[0]
+        if np.isnan(age_val) or np.isnan(sex_val):
+            continue
+        age_code = int(age_val)
+        sex_code = int(sex_val)
+        if age_code in cross and sex_code in [1, 2]:
+            cross[age_code][sex_code] += 1
+    return cross
 
 
 def format_pct(pct):
@@ -118,6 +160,33 @@ def _load_raw_as_108(raw_xlsx_path: Path):
     return headers, rows_dense
 
 
+def _load_survey_clean_numeric(tables_dir: Path):
+    p = tables_dir / "survey_clean.csv"
+    if not p.exists():
+        return None
+    rows = read_csv(p)
+    if not rows:
+        return None
+    keys = [f"C{i:03d}" for i in range(1, 109)]
+    if any(k not in rows[0] for k in keys):
+        return None
+    mat = np.full((len(rows), len(keys)), np.nan, dtype=float)
+    for i, r in enumerate(rows):
+        for j, k in enumerate(keys):
+            mat[i, j] = to_float(r.get(k))
+    return mat
+
+
+def _load_run_metadata(output_dir: Path):
+    p = output_dir / "run_metadata.json"
+    if not p.exists():
+        return {}
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Check consistency between pending doc and current outputs (v2).")
     parser.add_argument("--doc-path", required=True, help="Target docx path.")
@@ -135,18 +204,29 @@ def main():
     output_dir = Path(args.output_dir)
     out_path = output_dir / "tables" / "待填数据_一致性核查报告.csv"
 
-    headers, rows_dense = _load_raw_as_108(raw_xlsx_path)
-    num_raw, _ = numeric_matrix(rows_dense)
-    num = num_raw.copy()
+    run_meta = _load_run_metadata(output_dir)
+    clean_num = _load_survey_clean_numeric(tables_dir)
+    if clean_num is None:
+        headers, rows_dense = _load_raw_as_108(raw_xlsx_path)
+        num_raw, _ = numeric_matrix(rows_dense)
+        num = num_raw.copy()
+        valid_n = len(rows_dense)
+    else:
+        num = clean_num.copy()
+        valid_n = clean_num.shape[0]
+    raw_n = int(run_meta.get("n_samples", valid_n))
+    valid_n_meta = int(run_meta.get("remain_n_revised", valid_n))
+    if valid_n_meta > 0:
+        valid_n = valid_n_meta
+    valid_rate = 100.0 * float(valid_n) / float(raw_n) if raw_n > 0 else 0.0
     num[:, 32:51] = np.where(num[:, 32:51] == -3, np.nan, num[:, 32:51])
-
-    n_samples = len(rows_dense)
     q1 = freq_as_dict(num[:, 0])
     q2 = freq_as_dict(num[:, 1])
     q3 = freq_as_dict(num[:, 2])
     q4 = freq_as_dict(num[:, 3])
     q5 = freq_as_dict(num[:, 4])
     q8 = freq_as_dict(num[:, 7])
+    age_sex = age_gender_cross(num)
 
     val_cols = list(range(52, 64)) + [65] + list(range(66, 86)) + list(range(86, 90))
     validity = kmo_bartlett(num[:, [c - 1 for c in val_cols]])
@@ -177,13 +257,16 @@ def main():
     )
 
     expected_alloc = (
-        str(n_samples),
-        str(n_samples),
+        str(raw_n),
+        str(raw_n),
+        str(valid_n),
         str(q8.get(1, {"count": 0})["count"]),
         str(q8.get(2, {"count": 0})["count"]),
-        "100.00",
+        f"{valid_rate:.2f}",
     )
-    alloc_pattern = re.compile(r"累计发放问卷(\d+)份，回收有效问卷(\d+)份（到访(\d+)份、未到访(\d+)份），有效回收率([0-9.]+)%")
+    alloc_pattern = re.compile(
+        r"累计发放问卷(\d+)份，回收问卷(\d+)份，质控后有效问卷(\d+)份（到访(\d+)份、未到访(\d+)份），有效率([0-9.]+)%"
+    )
     alloc_matches = []
     for p in paras:
         alloc_matches.extend(alloc_pattern.findall(p))
@@ -192,7 +275,7 @@ def main():
             results,
             "paragraph.formal_allocation",
             "(missing)",
-            f"累计发放问卷{n_samples}份，回收有效问卷{n_samples}份（到访{expected_alloc[2]}份、未到访{expected_alloc[3]}份），有效回收率100.00%",
+            f"累计发放问卷{raw_n}份，回收问卷{raw_n}份，质控后有效问卷{valid_n}份（到访{expected_alloc[3]}份、未到访{expected_alloc[4]}份），有效率{expected_alloc[5]}%",
             f"{doc_path} + {raw_xlsx_path}(Q8)",
             "FAIL",
             "未找到正式调查配额段落",
@@ -202,24 +285,24 @@ def main():
             add_result(
                 results,
                 f"paragraph.formal_allocation.{i}",
-                f"{m[0]}/{m[1]}/{m[2]}/{m[3]}/{m[4]}%",
-                f"{expected_alloc[0]}/{expected_alloc[1]}/{expected_alloc[2]}/{expected_alloc[3]}/{expected_alloc[4]}%",
+                f"{m[0]}/{m[1]}/{m[2]}/{m[3]}/{m[4]}/{m[5]}%",
+                f"{expected_alloc[0]}/{expected_alloc[1]}/{expected_alloc[2]}/{expected_alloc[3]}/{expected_alloc[4]}/{expected_alloc[5]}%",
                 f"{doc_path} + {raw_xlsx_path}(Q8)",
                 "PASS" if tuple(m) == expected_alloc else "FAIL",
                 "正式调查回收口径",
             )
 
-    overall_pattern = re.compile(r"本次调查累计发放问卷(\d+)份，有效问卷(\d+)份，问卷有效率([0-9.]+)%")
+    overall_pattern = re.compile(r"本次调查累计发放问卷(\d+)份，回收问卷(\d+)份，质控后有效问卷(\d+)份（有效率([0-9.]+)%）")
     overall_matches = []
     for p in paras:
         overall_matches.extend(overall_pattern.findall(p))
-    expected_overall = (str(n_samples), str(n_samples), "100.00")
+    expected_overall = (str(raw_n), str(raw_n), str(valid_n), f"{valid_rate:.2f}")
     if not overall_matches:
         add_result(
             results,
             "paragraph.overall_sample",
             "(missing)",
-            f"本次调查累计发放问卷{n_samples}份，有效问卷{n_samples}份，问卷有效率100.00%",
+            f"本次调查累计发放问卷{raw_n}份，回收问卷{raw_n}份，质控后有效问卷{valid_n}份（有效率{valid_rate:.2f}%）",
             f"{doc_path} + {raw_xlsx_path}",
             "FAIL",
             "未找到样本结构段落",
@@ -229,38 +312,37 @@ def main():
             add_result(
                 results,
                 f"paragraph.overall_sample.{i}",
-                f"{m[0]}/{m[1]}/{m[2]}%",
-                f"{expected_overall[0]}/{expected_overall[1]}/{expected_overall[2]}%",
+                f"{m[0]}/{m[1]}/{m[2]}/{m[3]}%",
+                f"{expected_overall[0]}/{expected_overall[1]}/{expected_overall[2]}/{expected_overall[3]}%",
                 f"{doc_path} + {raw_xlsx_path}",
                 "PASS" if tuple(m) == expected_overall else "FAIL",
                 "正式调查总样本口径",
             )
 
     gender_age_pattern = re.compile(
-        r"本次调查回收有效问卷共(\d+)份，在所有受访者中，男女比例为(\d+):(\d+)（([0-9.]+)%:([0-9.]+)%）[；;]年龄结构中，编码(\d+)占([0-9.]+)%，编码(\d+)占([0-9.]+)%，编码(\d+)占([0-9.]+)%"
+        r"本次调查回收有效问卷共(\d+)份，在所有受访者中，男女比例为(\d+):(\d+)（([0-9.]+)%:([0-9.]+)%）[。；;](?:从年龄分布看，)?18岁以下占([0-9.]+)%，18-25岁占([0-9.]+)%，26-45岁占([0-9.]+)%，46-64岁占([0-9.]+)%，65岁及以上占([0-9.]+)%[。]?"
     )
     ga_matches = []
     for p in paras:
         ga_matches.extend(gender_age_pattern.findall(p))
     expected_ga = (
-        str(n_samples),
+        str(valid_n),
         str(q1.get(1, {"count": 0})["count"]),
         str(q1.get(2, {"count": 0})["count"]),
         f"{q1.get(1, {'pct': 0.0})['pct']:.2f}",
         f"{q1.get(2, {'pct': 0.0})['pct']:.2f}",
-        "3",
+        f"{q2.get(1, {'pct': 0.0})['pct']:.2f}",
         f"{q2.get(3, {'pct': 0.0})['pct']:.2f}",
-        "2",
         f"{q2.get(2, {'pct': 0.0})['pct']:.2f}",
-        "4",
         f"{q2.get(4, {'pct': 0.0})['pct']:.2f}",
+        f"{q2.get(5, {'pct': 0.0})['pct']:.2f}",
     )
     if not ga_matches:
         add_result(
             results,
             "paragraph.gender_age",
             "(missing)",
-            "n;male:female;pct;age-top3",
+            "n;male:female;pct;age-5groups",
             f"{doc_path} + {raw_xlsx_path}(Q1,Q2)",
             "FAIL",
             "未找到性别年龄段落",
@@ -274,7 +356,7 @@ def main():
                 ";".join(expected_ga),
                 f"{doc_path} + {raw_xlsx_path}(Q1,Q2)",
                 "PASS" if tuple(m) == expected_ga else "FAIL",
-                "样本结构（性别+年龄核心占比）",
+                "样本结构（性别+年龄五档占比）",
             )
 
     if len(tables) < 5:
@@ -362,7 +444,146 @@ def main():
         add_compare(results, f"table5.row{row_idx+1}.total", safe_cell(t5, row_idx, 4), expected_total, f"{doc_path}(table5)", "组首行为100%，其余留空")
 
     add_compare(results, "table5.valid_n.label", safe_cell(t5, 19, 0), "有效填写人次", f"{doc_path}(table5)", "汇总标签")
-    add_compare(results, "table5.valid_n.value", safe_cell(t5, 19, 1), str(n_samples), str(raw_xlsx_path), "样本总数")
+    add_compare(results, "table5.valid_n.value", safe_cell(t5, 19, 1), str(valid_n), str(raw_xlsx_path), "样本总数（质控后）")
+
+    table36_path = tables_dir / "表3-6_受访者基本信息频数表.csv"
+    if not table36_path.exists():
+        add_result(
+            results,
+            "artifact.table3_6.exists",
+            "missing",
+            "exists",
+            str(table36_path),
+            "FAIL",
+            "缺少表3-6导出CSV",
+        )
+    else:
+        t36_rows = read_csv(table36_path)
+        expected_t36 = []
+        expected_t36.extend(
+            [
+                {"变量": "文化程度", "属性": "初中及以下", "人数": str(q3.get(1, {"count": 0})["count"]), "比例": format_pct(q3.get(1, {"pct": 0.0})["pct"]), "总计": "100%"},
+                {"变量": "", "属性": "中专/高中", "人数": str(q3.get(2, {"count": 0})["count"]), "比例": format_pct(q3.get(2, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "大专", "人数": str(q3.get(3, {"count": 0})["count"]), "比例": format_pct(q3.get(3, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "本科", "人数": str(q3.get(4, {"count": 0})["count"]), "比例": format_pct(q3.get(4, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "硕士及以上", "人数": str(q3.get(5, {"count": 0})["count"]), "比例": format_pct(q3.get(5, {"pct": 0.0})["pct"]), "总计": ""},
+            ]
+        )
+        expected_t36.extend(
+            [
+                {"变量": "职业", "属性": "学生", "人数": str(q4.get(1, {"count": 0})["count"]), "比例": format_pct(q4.get(1, {"pct": 0.0})["pct"]), "总计": "100%"},
+                {"变量": "", "属性": "企业/公司职员", "人数": str(q4.get(2, {"count": 0})["count"]), "比例": format_pct(q4.get(2, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "事业单位人员/公务员", "人数": str(q4.get(3, {"count": 0})["count"]), "比例": format_pct(q4.get(3, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "自由职业者", "人数": str(q4.get(4, {"count": 0})["count"]), "比例": format_pct(q4.get(4, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "个体经营者", "人数": str(q4.get(5, {"count": 0})["count"]), "比例": format_pct(q4.get(5, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "服务业从业者", "人数": str(q4.get(6, {"count": 0})["count"]), "比例": format_pct(q4.get(6, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "离退休人员", "人数": str(q4.get(7, {"count": 0})["count"]), "比例": format_pct(q4.get(7, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "其他", "人数": str(q4.get(8, {"count": 0})["count"]), "比例": format_pct(q4.get(8, {"pct": 0.0})["pct"]), "总计": ""},
+            ]
+        )
+        expected_t36.extend(
+            [
+                {"变量": "月收入", "属性": "3000元以下", "人数": str(q5.get(1, {"count": 0})["count"]), "比例": format_pct(q5.get(1, {"pct": 0.0})["pct"]), "总计": "100%"},
+                {"变量": "", "属性": "3001-5000元", "人数": str(q5.get(2, {"count": 0})["count"]), "比例": format_pct(q5.get(2, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "5001-8000元", "人数": str(q5.get(3, {"count": 0})["count"]), "比例": format_pct(q5.get(3, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "8001-15000元", "人数": str(q5.get(4, {"count": 0})["count"]), "比例": format_pct(q5.get(4, {"pct": 0.0})["pct"]), "总计": ""},
+                {"变量": "", "属性": "15000元以上", "人数": str(q5.get(5, {"count": 0})["count"]), "比例": format_pct(q5.get(5, {"pct": 0.0})["pct"]), "总计": ""},
+            ]
+        )
+        expected_t36.append({"变量": "有效填写人次", "属性": str(valid_n), "人数": "", "比例": "", "总计": ""})
+
+        add_compare(results, "artifact.table3_6.row_count", str(len(t36_rows)), str(len(expected_t36)), str(table36_path), "行数")
+        for i, expected in enumerate(expected_t36):
+            if i >= len(t36_rows):
+                add_result(
+                    results,
+                    f"artifact.table3_6.row{i+1}",
+                    "(missing)",
+                    f"{expected['变量']}/{expected['属性']}/{expected['人数']}/{expected['比例']}/{expected['总计']}",
+                    str(table36_path),
+                    "FAIL",
+                    "缺少行",
+                )
+                continue
+            row = t36_rows[i]
+            add_compare(results, f"artifact.table3_6.row{i+1}.var", row.get("变量", ""), expected["变量"], str(table36_path), "变量")
+            add_compare(results, f"artifact.table3_6.row{i+1}.attr", row.get("属性", ""), expected["属性"], str(table36_path), "属性")
+            add_compare(results, f"artifact.table3_6.row{i+1}.count", row.get("人数", ""), expected["人数"], str(table36_path), "人数")
+            add_compare(results, f"artifact.table3_6.row{i+1}.pct", row.get("比例", ""), expected["比例"], str(table36_path), "比例")
+            add_compare(results, f"artifact.table3_6.row{i+1}.total", row.get("总计", ""), expected["总计"], str(table36_path), "总计")
+
+    age_gender_path = tables_dir / "年龄性别分布_频数表.csv"
+    if not age_gender_path.exists():
+        add_result(
+            results,
+            "artifact.age_gender_csv.exists",
+            "missing",
+            "exists",
+            str(age_gender_path),
+            "FAIL",
+            "缺少年龄性别频数CSV",
+        )
+    else:
+        age_rows = read_csv(age_gender_path)
+        add_compare(results, "artifact.age_gender_csv.row_count", str(len(age_rows)), str(len(AGE_ORDER)), str(age_gender_path), "年龄分组数")
+        csv_total_sum = 0
+        for i, age_code in enumerate(AGE_ORDER):
+            expected_label = AGE_LABELS[age_code]
+            expected_m = str(age_sex[age_code][1])
+            expected_f = str(age_sex[age_code][2])
+            expected_total = str(age_sex[age_code][1] + age_sex[age_code][2])
+            expected_pct = format_pct(q2.get(age_code, {"pct": 0.0})["pct"])
+            if i >= len(age_rows):
+                add_result(
+                    results,
+                    f"artifact.age_gender_csv.row{i+1}",
+                    "(missing)",
+                    f"{expected_label}/{expected_m}/{expected_f}/{expected_total}/{expected_pct}",
+                    str(age_gender_path),
+                    "FAIL",
+                    "缺少年龄分组行",
+                )
+                continue
+            row = age_rows[i]
+            add_compare(results, f"artifact.age_gender_csv.row{i+1}.age_code", row.get("年龄编码", ""), str(age_code), str(age_gender_path), "年龄编码")
+            add_compare(results, f"artifact.age_gender_csv.row{i+1}.age_label", row.get("年龄段", ""), expected_label, str(age_gender_path), "年龄段")
+            add_compare(results, f"artifact.age_gender_csv.row{i+1}.male", row.get("男", ""), expected_m, str(age_gender_path), "男")
+            add_compare(results, f"artifact.age_gender_csv.row{i+1}.female", row.get("女", ""), expected_f, str(age_gender_path), "女")
+            add_compare(results, f"artifact.age_gender_csv.row{i+1}.total", row.get("合计", ""), expected_total, str(age_gender_path), "合计")
+            add_compare(results, f"artifact.age_gender_csv.row{i+1}.pct", row.get("占比", ""), expected_pct, str(age_gender_path), "占比")
+            csv_total_sum += to_int_text(row.get("合计"))
+        add_compare(results, "artifact.age_gender_csv.total_sum", str(csv_total_sum), str(valid_n), str(age_gender_path), "各年龄段合计应等于有效样本")
+
+    age_fig_path = output_dir / "figures" / "年龄段人数_性别堆叠图.png"
+    if not age_fig_path.exists():
+        add_result(
+            results,
+            "artifact.age_gender_figure.exists",
+            "missing",
+            "exists",
+            str(age_fig_path),
+            "FAIL",
+            "缺少年龄段性别堆叠图",
+        )
+    else:
+        add_result(
+            results,
+            "artifact.age_gender_figure.exists",
+            "exists",
+            "exists",
+            str(age_fig_path),
+            "PASS",
+            "图像文件存在",
+        )
+        add_result(
+            results,
+            "artifact.age_gender_figure.size",
+            str(age_fig_path.stat().st_size),
+            ">0",
+            str(age_fig_path),
+            "PASS" if age_fig_path.stat().st_size > 0 else "FAIL",
+            "图像文件大小",
+        )
 
     pending_path = output_dir / "tables" / "待填数据_待补项清单.csv"
     if not pending_path.exists():
@@ -390,4 +611,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

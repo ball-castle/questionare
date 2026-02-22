@@ -1,0 +1,4 @@
+﻿step,n,rule
+raw_input,961,原始样本
+invalid_revised,81,重筛口径剔除
+remain_revised,880,重筛后保留样本

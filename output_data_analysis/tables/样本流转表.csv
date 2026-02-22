@@ -1,0 +1,5 @@
+﻿step,n,rule
+raw_input,961,原始样本
+invalid_removed,81,balanced_v20260221：剔除高风险异常样本
+main_analysis,880,主分析样本（balanced_v20260221）
+sensitivity,106,敏感性：剔除注意力题异常与逻辑异常
