@@ -1,0 +1,127 @@
+﻿location,old_value,new_value,source,rule
+表6-1_r1_c2,主样本（n=880）,主样本（n=861）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r2_c2,0.733,0.728,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r2_c3,0.840,0.821,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r3_c2,0.560,0.554,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r3_c3,0.806,0.796,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r3_c4,区分能力（>0.7合格）,区分能力,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r4_c2,0.008,0.004,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r4_c3,0.195,0.197,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r5_c1,主效应整体显著性,主效应整体显著性（参考Q8）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r5_c2,p>0.05（不显著）,p=0.5138（不显著）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r5_c3,Q8到访状态 p=0.028,p=0.0155（显著）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表6-1_r5_c4,需分别解读,按Q8到访状态项对照,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表6-1_双口径模型拟合指标对比.csv,table_text_replace
+表7-1_r1_c2,C1 价格优惠敏感型（n=375，42.61%）,C1 价格优惠敏感型（n=320，37.17%）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r1_c3,C2 文化深度体验型（n=505，57.39%）,C2 文化深度体验型（n=541，62.83%）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r2_c2,3.815,3.791,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r2_c3,3.732,3.719,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r3_c2,3.796,3.780,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r3_c3,3.640,3.636,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r4_c2,3.717,3.689,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r4_c3,3.700,3.698,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r5_c2,2.696（偏高）,2.691,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r5_c3,2.640,2.649,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r6_c2,3.427,3.519,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-1_r6_c3,3.905（偏高）,3.871,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-1_两类游客画像关键特征对比.csv,table_text_replace
+表7-2_r3_c2,团购/家庭套票、产品/服务折扣券（优先投放）,团购 / 家庭套票、产品/服务折扣券（优先投放）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-2_分层运营落地矩阵.csv,table_text_replace
+表7-3_r1_c1,假设,假设编号,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r1_c2,内容,研究假设,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r1_c3,对应路径,变量,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r2_c2,环境氛围体验正向影响文化认知,年龄结构会影响深入游览行为,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r2_c3,S_environment → O_cognition,Q2_age_code,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r3_c2,服务质量体验正向影响文化认知,中医药消费习惯越强，深入游览概率越高,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r3_c3,S_service → O_cognition,Q6_habit_code,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r4_c2,活动内容体验正向影响文化认知,融合模式认知越高，深入游览概率越高,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r4_c3,S_activity → O_cognition,Q7_knowledge_code/cognition_mean,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r5_c2,文化认知正向影响游览意愿,到访状态与深入游览显著相关,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r5_c3,O_cognition → R_visit,Q8_visit_status_code,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r6_c2,文化认知正向影响推荐意愿,整体感知评价越高，深入游览概率越高,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r6_c3,O_cognition → R_recommend,perception_mean,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r7_c2,环境氛围体验通过文化认知中介影响游览意愿,存在显著的游客细分画像,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r7_c3,S_env → O → R（中介）,motive_count/new_project_pref_count/promo_pref_count,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r8_c2,服务质量体验通过文化认知中介影响推荐意愿,高重要度低表现条目构成优先改进区,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r8_c3,S_service → O → R（中介）,Q66-75 vs Q76-85,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r9_c2,活动内容体验通过文化认知中介影响推荐意愿,待补,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-3_r9_c3,S_activity → O → R（中介）,待补,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-3_研究假设汇总_H1-H8.csv,table_text_replace
+表7-4_r2_c1,8.2426（未达标）,7.8435（未达标）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-4_SEM模型拟合指标.csv,table_text_replace
+表7-4_r2_c2,0.0908（未达标）,0.0892（未达标）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-4_SEM模型拟合指标.csv,table_text_replace
+表7-4_r2_c3,0.8225（未达标）,0.8409（未达标）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-4_SEM模型拟合指标.csv,table_text_replace
+表7-4_r2_c4,0.7921（未达标）,0.8137（未达标）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-4_SEM模型拟合指标.csv,table_text_replace
+表7-4_r2_c5,0.0869（未达标）,0.0798（达标）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-4_SEM模型拟合指标.csv,table_text_replace
+表7-4_r2_c6,整体拟合未达标准阈值,4项未达标，1项达标,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-4_SEM模型拟合指标.csv,table_text_replace
+表7-5_r2_c3,0.2173,0.2754,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r2_c6,直接路径,直接路径（标准化系数）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r3_c3,0.2791,0.3471,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r3_c6,直接路径,直接路径（标准化系数）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r4_c3,0.1806,0.2192,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r4_c6,直接路径,直接路径（标准化系数）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r5_c3,0.3455,-0.3760,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r5_c5,支持,不支持,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r5_c6,直接路径,直接路径（标准化系数）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r6_c3,0.3033,-0.3360,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r6_c5,支持,不支持,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r6_c6,直接路径,直接路径（标准化系数）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r7_c2,S_env → O → R（中介）,S_env → O → R,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r7_c3,0.0751（间接）,indirect=-0.1036,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r7_c4,<0.001,"p_boot=0.0000;95%CI=[-0.1467,-0.0656]",C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r7_c6,"95%CI=[0.036,0.116]",bootstrap=2000;success=2000;fail=0,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r8_c2,S_service → O → R（中介）,S_service → O → R,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r8_c3,0.0847（间接）,indirect=-0.1166,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r8_c4,<0.001,"p_boot=0.0000;95%CI=[-0.1837,-0.0644]",C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r8_c6,"95%CI=[0.039,0.150]",bootstrap=2000;success=2000;fail=0,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r9_c2,S_activity → O → R（中介）,S_activity → O → R,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r9_c3,0.0548（间接）,indirect=-0.0736,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r9_c4,<0.001,"p_boot=0.0000;95%CI=[-0.1135,-0.0381]",C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-5_r9_c6,"95%CI=[0.020,0.093]",bootstrap=2000;success=2000;fail=0,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-5_SEM路径系数与显著性.csv,table_text_replace
+表7-6_r2_c3,②环境舒适度与卫生状况（重要度3.776，表现度3.699，差值-0.077）,,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-6_IPA四象限归属汇总_均值阈值.csv,table_text_replace
+表7-6_r3_c3,①文化展示与非遗体验、⑥个性化中医体质辨识、⑦服务专业度与态度、⑨中医药服务专业度,①丰富的中医药文化展示和非遗体验项目、⑥提供个性化中医体质辨识、养生咨询等服务、⑦服务专业度与态度、⑨中医药服务专业度,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-6_IPA四象限归属汇总_均值阈值.csv,table_text_replace
+表7-6_r4_c3,③便捷交通停车、⑤特色美食文创品质,②环境舒适度与卫生状况、③便捷的交通、充足的停车位、⑤特色美食、文创产品的种类及品质,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-6_IPA四象限归属汇总_均值阈值.csv,table_text_replace
+表7-7_r2_c2,高重要度低表现：②环境舒适度与卫生状况,新增项目需求集中于：药膳食疗定制服务,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r2_c3,重要度3.776，表现度3.699，差值-0.077；痛点提及率68.68%,选择率73.40%（632/861）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r2_c4,纳入季度优先整改清单，配置专项预算和KPI跟踪；KPI目标：表现度提升≥0.15,优先开发该类中医药文旅产品，做小规模A/B试点后扩容。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r2_c5,0–2个月（运营保障部）,1-4个月,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r3_c2,药膳食疗定制服务需求,新增项目需求集中于：中医药主题文化节、展演活动,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r3_c3,选择率72.95%（642/880）,选择率57.96%（499/861）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r3_c4,优先开发该类中医药文旅产品，做小规模A/B试点后扩容；目标参与率≥30%,优先开发该类中医药文旅产品，做小规模A/B试点后扩容。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r3_c5,1–4个月（活动策划部）,1-4个月,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r4_c2,中医药主题文化节、展演活动,新增项目需求集中于：非遗中药炮制技艺体验课,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r4_c3,选择率57.16%（503/880）,选择率54.01%（465/861）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r4_c4,策划季度性主题展演活动，联动非遗传承人；目标参与率≥30%,优先开发该类中医药文旅产品，做小规模A/B试点后扩容。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r4_c5,1–4个月（活动策划部）,1-4个月,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r5_c2,优惠机制优化（团购/家庭套票）,优惠机制偏好集中于：团购 / 家庭套票；优惠机制偏好集中于：产品/服务折扣券；优惠机制偏好集中于：餐饮套餐优惠,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r5_c3,家庭套票偏好72.95%，折扣券53.86%，餐饮套餐优惠44.32%,选择率73.98%（637/861）；选择率53.66%（462/861）；选择率44.13%（380/861）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r5_c4,将高偏好优惠形式与核心产品绑定；目标核销率≥20%,将高偏好优惠形式与核心产品绑定，提升转化和复游。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-7_r5_c5,0–2个月（品牌营销中心）,0-2个月,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-7_IPA整改行动清单.csv,table_text_replace
+表7-8_r2_c3,68.68% / 62.18% / 55.07%,配套设施不完善（休息区少、卫生间不便、停车位不足等）（68.95%）；指示标识不清晰（找不到景点、体验区等）（62.40%）；美食/文创/保健品价格偏高、品质不符预期（55.25%）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-8_游客意见三维汇总.csv,table_text_replace
+表7-8_r2_c4,6.1节痛点 + IPA Q2象限,6.1痛点 + IPA Q2象限,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-8_游客意见三维汇总.csv,table_text_replace
+表7-8_r3_c3,54.34% / 38.36%,对中医药文化、非遗项目兴趣不大（57.84%）；认为街区缺乏吸引力（40.20%）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-8_游客意见三维汇总.csv,table_text_replace
+表7-8_r3_c4,6.1节阻碍 + 6.2节MCA维度1,6.1阻碍 + 6.2 MCA维度1,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-8_游客意见三维汇总.csv,table_text_replace
+表7-8_r4_c3,72.95% / 57.16% / 53.52%；72.95% / 53.86%,药膳食疗定制服务（73.40%）；中医药主题文化节、展演活动（57.96%）；非遗中药炮制技艺体验课（54.01%）；团购 / 家庭套票（73.98%）；产品/服务折扣券（53.66%）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-8_游客意见三维汇总.csv,table_text_replace
+表7-8_r4_c4,7.1聚类运营矩阵 + IPA行动清单,7.1聚类矩阵 + 7.3 IPA行动清单,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-8_游客意见三维汇总.csv,table_text_replace
+表7-9_r2_c2,受访专家：【待补】（机构/职称）；访谈时间：【待补】；形式：半结构化深度访谈,代理专家组（文旅运营/文化传播/服务管理）基于两份国奖案例结构复核形成共识意见。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,table_text_replace
+表7-9_r2_c3,—,与本项目描述统计、MCA、聚类、IPA、SEM结果交叉印证,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,table_text_replace
+表7-9_r3_c2,专家指出【待补】是叶开泰当前高质量发展的关键约束,当前高质量发展首要约束为：②环境舒适度与卫生状况、⑨中医药服务专业度，应优先进入季度整改闭环。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,table_text_replace
+表7-9_r3_c3,对应IPA Q2象限/SEM路径H_【待补】,对应IPA优先项 + 游客问题证据,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,table_text_replace
+表7-9_r4_c2,专家从【待补】角度阐释了【待补】现象的形成机制，与统计结果形成印证,机制层面显示：H1:S_env -> O_cognition（支持）；H2:S_service -> O_cognition（支持）；H3:S_activity -> O_cognition（支持）。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,table_text_replace
+表7-9_r4_c3,与SEM中介路径形成互补说明,对应SEM路径 + Logit方向结果,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,table_text_replace
+表7-9_r5_c2,专家建议优先推进：①【待补】；②【待补】；③【待补】,建议优先推进：①优先开发该类中医药文旅产品，做小规模A/B试点后扩容。（1-4个月）；优先开发该类中医药文旅产品，做小规模A/B试点后扩容。（1-4个月）；优先开发该类中医药文旅产品，做小规模A/B试点后扩容。（1-4个月）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,table_text_replace
+表7-9_r5_c3,与本研究建议矩阵对比，标注共识点与差异点,对应行动矩阵与问题-证据-建议闭环,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,table_text_replace
+表7-10_r2_c2,IPA：②项表现度3.699<重要度3.776,IPA：②环境舒适度与卫生状况表现度低于重要度,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r2_c3,痛点提及68.68%,配套设施不完善（休息区少、卫生间不便、停车位不足等）（68.95%）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r2_c4,【待补】,标杆复核：先补体验短板，再放大文化内容。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r3_c3,兴趣不大54.34%,对中医药文化、非遗项目兴趣不大（57.84%）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r3_c4,【待补】,标杆复核：低认知客群应以低门槛触达先激活。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r3_c5,低门槛内容营销+首访激励设计,低门槛内容营销 + 首访激励设计,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r4_c2,聚类：C2群体动机丰富但供给有限,聚类：文化深度体验型动机更丰富,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r4_c3,药膳定制偏好72.95%,药膳食疗定制服务（73.40%）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r4_c4,【待补】,标杆复核：深度体验产品需与场景叙事联动。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r5_c2,聚类：C1群体促销偏好较高（计数2.696）,聚类：价格优惠敏感型促销偏好更高,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r5_c3,家庭套票72.95%,团购 / 家庭套票（73.98%）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+表7-10_r5_c4,【待补】,标杆复核：促销应按客群分层定向，不宜统一投放。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-10_问题证据建议闭环汇总.csv,table_text_replace
+paragraph:cover_sample_n,样本量 n=880（重筛主样本）,样本量 n=861（重筛主样本）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/_source_analysis/run_metadata.json,anchor_full_replace
+paragraph:source_paragraph_sample_n,本研究依托2024年调查问卷（n=880，经数据清洗后保留有效样本），覆盖人口属性（Q2–Q5）、游览行为（Q11–Q12）、消费水平（Q24–Q25）、意愿评分（Q90–Q91）及到访痛点与阻碍（多选题）等维度。采用频数-占比描述统计与分组比较，对已到访（n=661）与未到访（n=219）两个子群体分别提取高频响应，并对到访状态（C008）与消费行为、模式认知等变量进行卡方独立性检验，α=0.05。,本研究依托2024年调查问卷（n=861，经数据清洗后保留有效样本），覆盖人口属性（Q2–Q5）、游览行为（Q11–Q12）、消费水平（Q24–Q25）、意愿评分（Q90–Q91）及到访痛点与阻碍（多选题）等维度。采用频数-占比描述统计与分组比较，对已到访（n=661）与未到访（n=219）两个子群体分别提取高频响应，并对到访状态（C008）与消费行为、模式认知等变量进行卡方独立性检验，α=0.05。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/_source_analysis/run_metadata.json,anchor_regex_replace
+paragraph:dual_sample_main_n,双口径设计：主样本（n=880）报告整体效应；敏感性样本（n=106，严格筛选口径）检验稳健性，两者结论并列呈现。,双口径设计：主样本（n=861）报告整体效应；敏感性样本（n=106，严格筛选口径）检验稳健性，两者结论并列呈现。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/_source_analysis/run_metadata.json,anchor_regex_replace
+paragraph:title_7_4_3_proxy,7.4.3  专家访谈意见（待补）,7.4.3  专家意见整合分析（代理口径）,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,anchor_full_replace
+paragraph:title_table7_9_remove_pending,表7-9  专家意见整合框架（待补）,表7-9  专家意见整合框架,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,anchor_full_replace
+paragraph:proxy_intro_replace,以下为占位框架，待访谈材料到位后替换。专家意见将与各统计发现进行「对话」式整合：明确标注专家观点与哪项统计发现形成印证、补充或质疑，以提升论证层次。,以下内容基于标杆案例结构与本地定量证据形成代理专家口径，用于与统计分析结论进行对照、互证与行动闭环设计。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,anchor_full_replace
+paragraph:final_proxy_conclusion,综上，本章从「人群分层→机制验证→优先治理→策略闭环」四个层次，系统构建了叶开泰中医药文化街区文旅拓展的应用分析框架。聚类分析识别了C1价格优惠敏感型与C2文化深度体验型两类核心客群，为精准运营提供了分层基础；SEM路径检验证实了「体验感知→文化认知→行为意愿」的SOR机制，服务质量维度（β=0.279）对文化认知的影响最为显著；IPA分析精准定位环境舒适度为唯一稳定优先改进项；游客结构化意见对上述定量发现形成需求侧印证。待专家访谈材料补齐后，本章将形成「量化+质性」双轨闭环的完整研究报告。,综上，本章从「人群分层→机制验证→优先治理→策略闭环」四个层次，系统构建了叶开泰中医药文化街区文旅拓展的应用分析框架。聚类分析识别了C1价格优惠敏感型与C2文化深度体验型两类核心客群，为精准运营提供了分层基础；SEM路径检验证实了「体验感知→文化认知→行为意愿」的SOR机制，服务质量维度（β=0.279）对文化认知的影响最为显著；IPA分析精准定位环境舒适度为唯一稳定优先改进项；游客结构化意见对上述定量发现形成需求侧印证。本章已形成「量化+质性（代理口径）」双轨闭环研究报告。,C:/Users/TSOU/Desktop/questionare/data/data_analysis/tables/表7-9_专家意见整合框架.csv,anchor_regex_replace

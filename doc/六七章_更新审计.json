@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-02-26T08:35:40.418Z",
+  "template": "C:\\Users\\TSOU\\Desktop\\questionare\\六七章.docx",
+  "output": "C:\\Users\\TSOU\\Desktop\\questionare\\doc\\六七章_基于data_analysis_更新.docx",
+  "data_dir": "C:\\Users\\TSOU\\Desktop\\questionare\\data\\data_analysis",
+  "source_dir": "C:\\Users\\TSOU\\Desktop\\questionare\\data\\data_analysis\\_source_analysis",
+  "strict": true,
+  "force": false,
+  "main_sample_n": 861,
+  "required_tables": [
+    "表6-1",
+    "表7-1",
+    "表7-2",
+    "表7-3",
+    "表7-4",
+    "表7-5",
+    "表7-6",
+    "表7-7",
+    "表7-8",
+    "表7-9",
+    "表7-10"
+  ],
+  "changed_rows": 126,
+  "structure_before": {
+    "tbl": 11,
+    "tr": 62,
+    "tc": 253,
+    "p": 397,
+    "r": 560
+  },
+  "structure_after": {
+    "tbl": 11,
+    "tr": 62,
+    "tc": 253,
+    "p": 397,
+    "r": 560
+  },
+  "structure_unchanged": true,
+  "residuals": {
+    "pending_token": 0,
+    "pending_suffix": 0,
+    "sample_n_880": 0
+  },
+  "changes_csv": "C:\\Users\\TSOU\\Desktop\\questionare\\doc\\六七章_更新明细.csv",
+  "checks": {
+    "table_count_expected": 11,
+    "table_count_actual": 11,
+    "pending_placeholder_zero": true
+  }
+}

@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import math
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -47,6 +49,20 @@ REQUIRED_COLS = [
     "C091",
 ]
 
+FIT_STANDARDS = {
+    "national_common": {
+        "CMIN/DF": ("lt", 3.0),
+        "RMSEA": ("lt", 0.08),
+        "CFI": ("gt", 0.90),
+        "TLI": ("gt", 0.90),
+        "SRMR": ("lt", 0.08),
+    }
+}
+
+
+def now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run SEM and fill table 7-4 / 7-5.")
@@ -77,6 +93,17 @@ def parse_args() -> argparse.Namespace:
         default="data_driven_v1",
         choices=["data_driven_v1"],
         help="Variable mapping profile.",
+    )
+    parser.add_argument(
+        "--fit-standard",
+        default="national_common",
+        choices=["national_common"],
+        help="Fit metric threshold profile.",
+    )
+    parser.add_argument(
+        "--audit-json",
+        default=None,
+        help="Path to SEM audit json. Defaults to <output-tables-dir>/SEM_建模审计.json.",
     )
     parser.add_argument(
         "--overwrite",
@@ -219,30 +246,25 @@ def _fmt(v: float, digits: int = 4) -> str:
     return f"{v:.{digits}f}"
 
 
-def _threshold_conclusion(metric: str, value: float) -> tuple[str, str]:
-    if metric == "CMIN/DF":
-        ok = value < 3.0
-        return ("达标" if ok else "未达标", "阈值：<3.0")
-    if metric == "RMSEA":
-        ok = value < 0.08
-        return ("达标" if ok else "未达标", "阈值：<0.08")
-    if metric == "CFI":
-        ok = value > 0.90
-        return ("达标" if ok else "未达标", "阈值：>0.90")
-    if metric == "TLI":
-        ok = value > 0.90
-        return ("达标" if ok else "未达标", "阈值：>0.90")
-    if metric == "SRMR":
-        ok = value < 0.08
-        return ("达标" if ok else "未达标", "阈值：<0.08")
-    return ("待判定", "")
+def metric_pass(metric: str, value: float, fit_standard: str) -> bool:
+    op, threshold = FIT_STANDARDS[fit_standard][metric]
+    if op == "lt":
+        return value < threshold
+    return value > threshold
 
 
-def write_table_74(path: Path, metrics: dict[str, float], solver: str) -> None:
+def _threshold_conclusion(metric: str, value: float, fit_standard: str) -> tuple[str, str]:
+    op, threshold = FIT_STANDARDS[fit_standard][metric]
+    ok = metric_pass(metric, value, fit_standard)
+    sign = "<" if op == "lt" else ">"
+    return ("达标" if ok else "未达标", f"阈值：{sign}{threshold:.2f}（{fit_standard}）")
+
+
+def write_table_74(path: Path, metrics: dict[str, float], solver: str, fit_standard: str) -> None:
     rows: list[dict[str, str]] = []
     for metric in ["CMIN/DF", "RMSEA", "CFI", "TLI", "SRMR"]:
         val = metrics[metric]
-        conclusion, th = _threshold_conclusion(metric, val)
+        conclusion, th = _threshold_conclusion(metric, val, fit_standard)
         rows.append(
             {
                 "指标": metric,
@@ -372,10 +394,12 @@ def main() -> None:
     out_dir = Path(args.output_tables_dir)
     out_74 = out_dir / "表7-4_SEM模型拟合指标.csv"
     out_75 = out_dir / "表7-5_SEM路径系数与显著性.csv"
+    audit_json = Path(args.audit_json) if args.audit_json else (out_dir / "SEM_建模审计.json")
 
     if (not args.overwrite) and (out_74.exists() or out_75.exists()):
         raise FileExistsError("Target tables already exist and --no-overwrite is set.")
     out_dir.mkdir(parents=True, exist_ok=True)
+    audit_json.parent.mkdir(parents=True, exist_ok=True)
 
     df = read_data(input_csv)
 
@@ -413,17 +437,54 @@ def main() -> None:
         min_success=min_success,
     )
 
-    write_table_74(out_74, metrics, solver)
+    write_table_74(out_74, metrics, solver, args.fit_standard)
     write_table_75(out_75, direct, indirect_point, dist, args.bootstrap_n, success_n, fail_n)
+
+    metric_checks = {}
+    for metric in ["CMIN/DF", "RMSEA", "CFI", "TLI", "SRMR"]:
+        op, threshold = FIT_STANDARDS[args.fit_standard][metric]
+        metric_checks[metric] = {
+            "value": metrics[metric],
+            "op": op,
+            "threshold": threshold,
+            "pass": metric_pass(metric, metrics[metric], args.fit_standard),
+        }
+    fit_all_pass = all(bool(v["pass"]) for v in metric_checks.values())
+    audit = {
+        "generated_at_utc": now_iso(),
+        "source_script": "run_sem_880.py",
+        "fit_standard": args.fit_standard,
+        "input_csv": str(input_csv),
+        "output_tables_dir": str(out_dir),
+        "outputs": {
+            "table_7_4": str(out_74),
+            "table_7_5": str(out_75),
+            "audit_json": str(audit_json),
+        },
+        "n_rows": int(len(df)),
+        "solver": solver,
+        "metrics": metrics,
+        "metric_checks": metric_checks,
+        "fit_all_pass": fit_all_pass,
+        "bootstrap": {
+            "n_requested": int(args.bootstrap_n),
+            "min_success_required": int(min_success),
+            "success": int(success_n),
+            "fail": int(fail_n),
+        },
+    }
+    audit_json.write_text(json.dumps(audit, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(
         "sem_done:",
         f"n={len(df)}",
         f"solver={solver}",
+        f"fit_standard={args.fit_standard}",
         f"bootstrap_success={success_n}",
         f"bootstrap_fail={fail_n}",
         f"table74={out_74}",
         f"table75={out_75}",
+        f"audit={audit_json}",
     )
 
 

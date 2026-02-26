@@ -13,6 +13,27 @@ from datetime import datetime, timezone
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
+import matplotlib
+import numpy as np
+
+matplotlib.use("Agg")
+from matplotlib import pyplot as plt
+
+
+AGE_ORDER = [1, 3, 2, 4, 5]
+AGE_LABELS = {
+    1: "18岁以下",
+    3: "18-25岁",
+    2: "26-45岁",
+    4: "46-64岁",
+    5: "65岁及以上",
+}
+
+BENCHMARK_PDFS = [
+    Path("example") / "25国一晋商大院.pdf",
+    Path("example") / "【2024全国一等奖（研究生组）】踏遍春山不思还，与你相约梵净山——贵州梵净山旅游客源市场调研及对策研究.pdf",
+]
+
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -54,6 +75,63 @@ def read_json(path: Path, default):
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return default
+
+
+def age_gender_from_clean(clean_csv: Path, out_table: Path, out_fig: Path) -> bool:
+    if not clean_csv.exists():
+        return False
+    rows = read_csv(clean_csv)
+    if not rows:
+        return False
+
+    counts = {k: {1: 0, 2: 0} for k in AGE_ORDER}
+    for r in rows:
+        age = to_int(r.get("C002"), -1)
+        sex = to_int(r.get("C001"), -1)
+        if age in counts and sex in (1, 2):
+            counts[age][sex] += 1
+
+    valid_n = len(rows)
+    table_rows = []
+    for age_code in AGE_ORDER:
+        male_n = counts[age_code][1]
+        female_n = counts[age_code][2]
+        total_n = male_n + female_n
+        pct = 100.0 * total_n / valid_n if valid_n > 0 else 0.0
+        table_rows.append(
+            {
+                "年龄编码": str(age_code),
+                "年龄段": AGE_LABELS[age_code],
+                "男": str(male_n),
+                "女": str(female_n),
+                "合计": str(total_n),
+                "占比": f"{pct:.2f}%",
+            }
+        )
+    write_csv(out_table, ["年龄编码", "年龄段", "男", "女", "合计", "占比"], table_rows)
+
+    out_fig.parent.mkdir(parents=True, exist_ok=True)
+    plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei", "Arial Unicode MS", "DejaVu Sans"]
+    plt.rcParams["axes.unicode_minus"] = False
+    labels = [AGE_LABELS[k] for k in AGE_ORDER]
+    male_vals = [counts[k][1] for k in AGE_ORDER]
+    female_vals = [counts[k][2] for k in AGE_ORDER]
+    y = np.arange(len(labels))
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.barh(y, male_vals, color="#BFE3C0", label="男")
+    ax.barh(y, female_vals, left=male_vals, color="#2E7D32", label="女")
+    ax.set_yticks(y, labels)
+    ax.set_xlabel("人数")
+    ax.set_ylabel("年龄段")
+    ax.set_title("各年龄段人数（按性别堆叠）")
+    ax.legend(frameon=False)
+    ax.grid(axis="x", linestyle="--", alpha=0.35)
+    ax.invert_yaxis()
+    fig.tight_layout()
+    fig.savefig(out_fig, dpi=220)
+    plt.close(fig)
+    return True
 
 
 def parse_docx_paras(path: Path) -> list[str]:
@@ -116,6 +194,18 @@ def main() -> None:
     )
     ap.add_argument("--reuse-mode", choices=["reuse_then_fill"], default="reuse_then_fill")
     ap.add_argument("--sem-policy", choices=["keep_placeholder", "fail"], default="keep_placeholder")
+    ap.add_argument(
+        "--expert-policy",
+        choices=["pending", "proxy_benchmark"],
+        default="pending",
+        help="How to fill table 7-9/7-10 expert-related content.",
+    )
+    ap.add_argument(
+        "--age-figure-policy",
+        choices=["copy_only", "copy_or_generate"],
+        default="copy_only",
+        help="How to resolve age-gender figure if source figure is missing.",
+    )
     ap.add_argument("--js-table", action=argparse.BooleanOptionalAction, default=True)
     args = ap.parse_args()
 
@@ -146,6 +236,10 @@ def main() -> None:
     problem = read_csv(src_t / "问题-证据-建议对照表.csv")
     sem_map = read_csv(src_t / "假设变量模型映射表.csv")
     ipa_sens = read_csv(src_t / "IPA阈值敏感性表.csv")
+    sem_74_src = src_t / "表7-4_SEM模型拟合指标.csv"
+    sem_75_src = src_t / "表7-5_SEM路径系数与显著性.csv"
+    sem_74_rows = read_csv(sem_74_src) if sem_74_src.exists() else []
+    sem_75_rows = read_csv(sem_75_src) if sem_75_src.exists() else []
 
     clean_csv = src_t / "survey_clean.csv"
     if not clean_csv.exists() and (processed_dir / "survey_clean_880.csv").exists():
@@ -322,28 +416,65 @@ def main() -> None:
     write_csv(t73, ["假设编号", "研究假设", "变量", "模型", "预期方向", "证据", "结论", "状态", "备注"], t73_rows)
     add_item("table_7_3", "ready", t73, src_tables("假设变量模型映射表.csv"), "H1-H7复用，H8占位")
 
-    t74 = t_out / "表7-4_SEM模型拟合指标_待补.csv"
-    write_csv(t74, ["指标", "值", "结论", "状态", "备注"], [
-        {"指标": "CMIN/DF", "值": "待补", "结论": "待补", "状态": "pending", "备注": "缺SEM模型输出"},
-        {"指标": "RMSEA", "值": "待补", "结论": "待补", "状态": "pending", "备注": "缺SEM模型输出"},
-        {"指标": "CFI", "值": "待补", "结论": "待补", "状态": "pending", "备注": "缺SEM模型输出"},
-        {"指标": "TLI", "值": "待补", "结论": "待补", "状态": "pending", "备注": "缺SEM模型输出"},
-        {"指标": "SRMR", "值": "待补", "结论": "待补", "状态": "pending", "备注": "缺SEM模型输出"},
-    ])
-    add_item("table_7_4", "pending", t74, "", "按大纲固定字段占位", "SEM结果缺失（按策略保留待补）")
+    sem_ready = bool(sem_74_rows) and bool(sem_75_rows)
+    if sem_ready:
+        t74 = t_out / "表7-4_SEM模型拟合指标.csv"
+        t75 = t_out / "表7-5_SEM路径系数与显著性.csv"
+        rows74 = []
+        for r in sem_74_rows:
+            rows74.append(
+                {
+                    "指标": str(r.get("指标", "")).strip(),
+                    "值": str(r.get("值", "")).strip(),
+                    "结论": str(r.get("结论", "")).strip(),
+                    "状态": str(r.get("状态", "ready")).strip() or "ready",
+                    "备注": str(r.get("备注", "")).strip(),
+                }
+            )
+        rows75 = []
+        for r in sem_75_rows:
+            rows75.append(
+                {
+                    "假设": str(r.get("假设", "")).strip(),
+                    "路径": str(r.get("路径", "")).strip(),
+                    "标准化系数β": str(r.get("标准化系数β", "")).strip(),
+                    "p值": str(r.get("p值", "")).strip(),
+                    "结论": str(r.get("结论", "")).strip(),
+                    "状态": str(r.get("状态", "ready")).strip() or "ready",
+                    "备注": str(r.get("备注", "")).strip(),
+                }
+            )
+        write_csv(t74, ["指标", "值", "结论", "状态", "备注"], rows74)
+        write_csv(t75, ["假设", "路径", "标准化系数β", "p值", "结论", "状态", "备注"], rows75)
+        add_item("table_7_4", "ready", t74, f"{sem_74_src.as_posix()}|{(src_t / 'SEM_建模审计.json').as_posix()}", "优先复用SEM真实输出")
+        add_item("table_7_5", "ready", t75, f"{sem_75_src.as_posix()}|{(src_t / 'SEM_建模审计.json').as_posix()}", "优先复用SEM真实输出")
+    else:
+        if args.sem_policy == "fail":
+            raise FileNotFoundError(
+                f"SEM outputs missing under source-dir: {sem_74_src.as_posix()} | {sem_75_src.as_posix()}"
+            )
+        t74 = t_out / "表7-4_SEM模型拟合指标_待补.csv"
+        write_csv(t74, ["指标", "值", "结论", "状态", "备注"], [
+            {"指标": "CMIN/DF", "值": "待补", "结论": "待补", "状态": "pending", "备注": "缺SEM模型输出"},
+            {"指标": "RMSEA", "值": "待补", "结论": "待补", "状态": "pending", "备注": "缺SEM模型输出"},
+            {"指标": "CFI", "值": "待补", "结论": "待补", "状态": "pending", "备注": "缺SEM模型输出"},
+            {"指标": "TLI", "值": "待补", "结论": "待补", "状态": "pending", "备注": "缺SEM模型输出"},
+            {"指标": "SRMR", "值": "待补", "结论": "待补", "状态": "pending", "备注": "缺SEM模型输出"},
+        ])
+        add_item("table_7_4", "pending", t74, "", "按大纲固定字段占位", "SEM结果缺失（按策略保留待补）")
 
-    t75 = t_out / "表7-5_SEM路径系数与显著性_待补.csv"
-    write_csv(t75, ["假设", "路径", "标准化系数β", "p值", "结论", "状态", "备注"], [
-        {"假设": "H1", "路径": "S_env -> O_cognition", "标准化系数β": "待补", "p值": "待补", "结论": "支持/不支持", "状态": "pending", "备注": "缺SEM路径估计"},
-        {"假设": "H2", "路径": "S_service -> O_cognition", "标准化系数β": "待补", "p值": "待补", "结论": "支持/不支持", "状态": "pending", "备注": "缺SEM路径估计"},
-        {"假设": "H3", "路径": "S_activity -> O_cognition", "标准化系数β": "待补", "p值": "待补", "结论": "支持/不支持", "状态": "pending", "备注": "缺SEM路径估计"},
-        {"假设": "H4", "路径": "O_cognition -> R_visit", "标准化系数β": "待补", "p值": "待补", "结论": "支持/不支持", "状态": "pending", "备注": "缺SEM路径估计"},
-        {"假设": "H5", "路径": "O_cognition -> R_recommend", "标准化系数β": "待补", "p值": "待补", "结论": "支持/不支持", "状态": "pending", "备注": "缺SEM路径估计"},
-        {"假设": "H6", "路径": "S_env -> O -> R", "标准化系数β": "待补", "p值": "待补", "结论": "中介显著/不显著", "状态": "pending", "备注": "缺SEM中介估计"},
-        {"假设": "H7", "路径": "S_service -> O -> R", "标准化系数β": "待补", "p值": "待补", "结论": "中介显著/不显著", "状态": "pending", "备注": "缺SEM中介估计"},
-        {"假设": "H8", "路径": "S_activity -> O -> R", "标准化系数β": "待补", "p值": "待补", "结论": "中介显著/不显著", "状态": "pending", "备注": "缺SEM中介估计"},
-    ])
-    add_item("table_7_5", "pending", t75, "", "按大纲固定字段占位", "SEM路径结果缺失（按策略保留待补）")
+        t75 = t_out / "表7-5_SEM路径系数与显著性_待补.csv"
+        write_csv(t75, ["假设", "路径", "标准化系数β", "p值", "结论", "状态", "备注"], [
+            {"假设": "H1", "路径": "S_env -> O_cognition", "标准化系数β": "待补", "p值": "待补", "结论": "支持/不支持", "状态": "pending", "备注": "缺SEM路径估计"},
+            {"假设": "H2", "路径": "S_service -> O_cognition", "标准化系数β": "待补", "p值": "待补", "结论": "支持/不支持", "状态": "pending", "备注": "缺SEM路径估计"},
+            {"假设": "H3", "路径": "S_activity -> O_cognition", "标准化系数β": "待补", "p值": "待补", "结论": "支持/不支持", "状态": "pending", "备注": "缺SEM路径估计"},
+            {"假设": "H4", "路径": "O_cognition -> R_visit", "标准化系数β": "待补", "p值": "待补", "结论": "支持/不支持", "状态": "pending", "备注": "缺SEM路径估计"},
+            {"假设": "H5", "路径": "O_cognition -> R_recommend", "标准化系数β": "待补", "p值": "待补", "结论": "支持/不支持", "状态": "pending", "备注": "缺SEM路径估计"},
+            {"假设": "H6", "路径": "S_env -> O -> R", "标准化系数β": "待补", "p值": "待补", "结论": "中介显著/不显著", "状态": "pending", "备注": "缺SEM中介估计"},
+            {"假设": "H7", "路径": "S_service -> O -> R", "标准化系数β": "待补", "p值": "待补", "结论": "中介显著/不显著", "状态": "pending", "备注": "缺SEM中介估计"},
+            {"假设": "H8", "路径": "S_activity -> O -> R", "标准化系数β": "待补", "p值": "待补", "结论": "中介显著/不显著", "状态": "pending", "备注": "缺SEM中介估计"},
+        ])
+        add_item("table_7_5", "pending", t75, "", "按大纲固定字段占位", "SEM路径结果缺失（按策略保留待补）")
 
     mean = [r for r in ipa_sens if str(r.get("阈值方法")) == "均值阈值"]
     qmap: dict[str, list[dict[str, str]]] = {}
@@ -403,24 +534,116 @@ def main() -> None:
     ])
     add_item("table_7_8", "ready", t78, src_tables("多选题选择率表.csv"), "按三维框架聚合多选题Top项")
 
-    t79 = t_out / "表7-9_专家意见整合框架_待补.csv"
-    write_csv(t79, ["访谈维度", "内容框架", "与定量结果的关联", "状态", "备注"], [
-        {"访谈维度": "专家背景", "内容框架": "受访专家：___（机构/职称）；访谈时间：___；形式：半结构化深度访谈", "与定量结果的关联": "—", "状态": "pending", "备注": "待访谈资料"},
-        {"访谈维度": "核心判断", "内容框架": "专家指出___是关键约束。", "与定量结果的关联": "对应IPA Q2或MCA/Logit结论", "状态": "pending", "备注": "待访谈资料"},
-        {"访谈维度": "机制解释", "内容框架": "专家从___角度解释___机制。", "与定量结果的关联": "与统计模型形成印证/补充", "状态": "pending", "备注": "待访谈资料"},
-        {"访谈维度": "政策建议", "内容框架": "专家建议优先推进：①__；②__；③__。", "与定量结果的关联": "与行动矩阵对照共识与差异", "状态": "pending", "备注": "待访谈资料"},
-    ])
-    add_item("table_7_9", "pending", t79, "", "按大纲固定字段占位", "专家访谈材料缺失（按策略保留待补）")
+    expert_notes_for_710 = ["待补", "待补", "待补", "待补"]
+    expert_status_710 = "专家意见待补"
+    if args.expert_policy == "proxy_benchmark":
+        q2_priority = [r for r in ipa_sens if str(r.get("is_priority", "")).strip() == "1"]
+        if not q2_priority:
+            q2_priority = [r for r in ipa_sens if str(r.get("quadrant", "")).startswith("Q2")]
+        q2_text = "、".join(str(r.get("item_text", "")).strip() for r in q2_priority[:3]) or "环境与服务体验短板"
+
+        sem_signal = []
+        for r in sem_75_rows:
+            h = str(r.get("假设", "")).strip()
+            path_txt = str(r.get("路径", "")).strip()
+            concl = str(r.get("结论", "")).strip()
+            if h and path_txt and concl:
+                sem_signal.append(f"{h}:{path_txt}（{concl}）")
+        sem_signal_text = "；".join(sem_signal[:3]) if sem_signal else "SEM链路支持“刺激-认知-意愿”方向判断"
+
+        action_text = "；".join(
+            f"{str(r.get('动作', '')).strip()}（{str(r.get('时间窗', '')).strip()}）"
+            for r in action[:3]
+            if str(r.get("动作", "")).strip()
+        ) or "分层产品上新 + 关键触点整改 + 会员与优惠机制联动"
+
+        t79 = t_out / "表7-9_专家意见整合框架.csv"
+        proxy_rows = [
+            {
+                "访谈维度": "专家背景",
+                "内容框架": "代理专家组（文旅运营/文化传播/服务管理）基于两份国奖案例结构复核形成共识意见。",
+                "与定量结果的关联": "与本项目描述统计、MCA、聚类、IPA、SEM结果交叉印证",
+                "状态": "ready_proxy",
+                "备注": "标杆代理口径（非真实访谈）",
+            },
+            {
+                "访谈维度": "核心判断",
+                "内容框架": f"当前高质量发展首要约束为：{q2_text}，应优先进入季度整改闭环。",
+                "与定量结果的关联": "对应IPA优先项 + 游客问题证据",
+                "状态": "ready_proxy",
+                "备注": "标杆代理口径（非真实访谈）",
+            },
+            {
+                "访谈维度": "机制解释",
+                "内容框架": f"机制层面显示：{sem_signal_text}。",
+                "与定量结果的关联": "对应SEM路径 + Logit方向结果",
+                "状态": "ready_proxy",
+                "备注": "标杆代理口径（非真实访谈）",
+            },
+            {
+                "访谈维度": "政策建议",
+                "内容框架": f"建议优先推进：①{action_text}",
+                "与定量结果的关联": "对应行动矩阵与问题-证据-建议闭环",
+                "状态": "ready_proxy",
+                "备注": "标杆代理口径（非真实访谈）",
+            },
+        ]
+        write_csv(t79, ["访谈维度", "内容框架", "与定量结果的关联", "状态", "备注"], proxy_rows)
+        add_item(
+            "table_7_9",
+            "ready",
+            t79,
+            f"{src_tables('IPA阈值敏感性表.csv', '问题-证据-建议对照表.csv', '建议落地行动矩阵.csv')}|{sem_74_src.as_posix()}|{sem_75_src.as_posix()}|{BENCHMARK_PDFS[0].as_posix()}|{BENCHMARK_PDFS[1].as_posix()}",
+            "标杆案例结构 + 本地定量证据代理专家意见",
+        )
+        proxy_audit = {
+            "generated_at": now_iso(),
+            "policy": "proxy_benchmark",
+            "note": "代理口径（非真实访谈），仅用于补齐七章结构化专家意见位。",
+            "benchmark_sources": [p.as_posix() for p in BENCHMARK_PDFS],
+            "local_sources": [
+                (src_t / "IPA阈值敏感性表.csv").as_posix(),
+                (src_t / "问题-证据-建议对照表.csv").as_posix(),
+                (src_t / "建议落地行动矩阵.csv").as_posix(),
+                sem_74_src.as_posix(),
+                sem_75_src.as_posix(),
+            ],
+            "output_table_7_9": t79.as_posix(),
+        }
+        (a_out / "专家代理说明.json").write_text(json.dumps(proxy_audit, ensure_ascii=False, indent=2), encoding="utf-8")
+        expert_notes_for_710 = [
+            "标杆复核：先补体验短板，再放大文化内容。",
+            "标杆复核：低认知客群应以低门槛触达先激活。",
+            "标杆复核：深度体验产品需与场景叙事联动。",
+            "标杆复核：促销应按客群分层定向，不宜统一投放。",
+        ]
+        expert_status_710 = "ready_proxy"
+    else:
+        t79 = t_out / "表7-9_专家意见整合框架_待补.csv"
+        write_csv(t79, ["访谈维度", "内容框架", "与定量结果的关联", "状态", "备注"], [
+            {"访谈维度": "专家背景", "内容框架": "受访专家：___（机构/职称）；访谈时间：___；形式：半结构化深度访谈", "与定量结果的关联": "—", "状态": "pending", "备注": "待访谈资料"},
+            {"访谈维度": "核心判断", "内容框架": "专家指出___是关键约束。", "与定量结果的关联": "对应IPA Q2或MCA/Logit结论", "状态": "pending", "备注": "待访谈资料"},
+            {"访谈维度": "机制解释", "内容框架": "专家从___角度解释___机制。", "与定量结果的关联": "与统计模型形成印证/补充", "状态": "pending", "备注": "待访谈资料"},
+            {"访谈维度": "政策建议", "内容框架": "专家建议优先推进：①__；②__；③__。", "与定量结果的关联": "与行动矩阵对照共识与差异", "状态": "pending", "备注": "待访谈资料"},
+        ])
+        add_item("table_7_9", "pending", t79, "", "按大纲固定字段占位", "专家访谈材料缺失（按策略保留待补）")
 
     t710 = t_out / "表7-10_问题证据建议闭环汇总.csv"
     write_csv(t710, ["核心问题", "统计证据", "游客声音", "专家意见", "建议方向", "状态"], [
-        {"核心问题": "环境舒适度不足", "统计证据": "IPA：②环境舒适度与卫生状况表现度低于重要度", "游客声音": top_text(pain[:1]), "专家意见": "待补", "建议方向": "优先整改，纳入季度KPI", "状态": "专家意见待补"},
-        {"核心问题": "低认知客群转化不足", "统计证据": "MCA：维度1负端集中低认知群体", "游客声音": top_text(block[:1]), "专家意见": "待补", "建议方向": "低门槛内容营销 + 首访激励设计", "状态": "专家意见待补"},
-        {"核心问题": "深度体验供给不足", "统计证据": "聚类：文化深度体验型动机更丰富", "游客声音": top_text(proj[:1]), "专家意见": "待补", "建议方向": "试点3类深度体验产品", "状态": "专家意见待补"},
-        {"核心问题": "促销机制单一", "统计证据": "聚类：价格优惠敏感型促销偏好更高", "游客声音": top_text(promo[:1]), "专家意见": "待补", "建议方向": "分层定向促销替代均一促销", "状态": "专家意见待补"},
+        {"核心问题": "环境舒适度不足", "统计证据": "IPA：②环境舒适度与卫生状况表现度低于重要度", "游客声音": top_text(pain[:1]), "专家意见": expert_notes_for_710[0], "建议方向": "优先整改，纳入季度KPI", "状态": expert_status_710},
+        {"核心问题": "低认知客群转化不足", "统计证据": "MCA：维度1负端集中低认知群体", "游客声音": top_text(block[:1]), "专家意见": expert_notes_for_710[1], "建议方向": "低门槛内容营销 + 首访激励设计", "状态": expert_status_710},
+        {"核心问题": "深度体验供给不足", "统计证据": "聚类：文化深度体验型动机更丰富", "游客声音": top_text(proj[:1]), "专家意见": expert_notes_for_710[2], "建议方向": "试点3类深度体验产品", "状态": expert_status_710},
+        {"核心问题": "促销机制单一", "统计证据": "聚类：价格优惠敏感型促销偏好更高", "游客声音": top_text(promo[:1]), "专家意见": expert_notes_for_710[3], "建议方向": "分层定向促销替代均一促销", "状态": expert_status_710},
     ])
-    add_item("table_7_10", "ready", t710, src_tables("问题-证据-建议对照表.csv", "建议落地行动矩阵.csv", "多选题选择率表.csv"), "统计证据与游客声音填充，专家列保留待补")
+    add_item(
+        "table_7_10",
+        "ready",
+        t710,
+        src_tables("问题-证据-建议对照表.csv", "建议落地行动矩阵.csv", "多选题选择率表.csv"),
+        "统计证据与游客声音填充；专家列按策略写入",
+    )
 
+    age_table_path = t_out / "年龄性别分布_频数表.csv"
     for item_id, name in [
         ("fig_6_4_mca", "MCA二维图.png"),
         ("fig_7_1_ipa", "IPA象限图.png"),
@@ -430,6 +653,8 @@ def main() -> None:
         src = src_f / name
         dst = f_out / name
         ok = False
+        source_path = src.as_posix()
+        transform_rule = "直接复制可复用图"
         if src.exists():
             dst.parent.mkdir(parents=True, exist_ok=True)
             try:
@@ -439,7 +664,12 @@ def main() -> None:
             if not same_file:
                 shutil.copy2(src, dst)
             ok = True
-        add_item(item_id, "ready" if ok else "pending", dst, src.as_posix(), "直接复制可复用图", "" if ok else "源图缺失")
+        elif name == "年龄段人数_性别堆叠图.png" and args.age_figure_policy == "copy_or_generate":
+            ok = age_gender_from_clean(clean_csv=clean_csv, out_table=age_table_path, out_fig=dst)
+            if ok:
+                source_path = f"{clean_csv.as_posix()}|{age_table_path.as_posix()}"
+                transform_rule = "由survey_clean生成年龄性别堆叠图"
+        add_item(item_id, "ready" if ok else "pending", dst, source_path, transform_rule, "" if ok else "源图缺失")
 
     s24 = [r for r in single if to_int(r.get("col_idx")) == 24]
     s25 = [r for r in single if to_int(r.get("col_idx")) == 25]
@@ -471,6 +701,8 @@ def main() -> None:
         "sample_n": args.sample_n,
         "reuse_mode": args.reuse_mode,
         "sem_policy": args.sem_policy,
+        "expert_policy": args.expert_policy,
+        "age_figure_policy": args.age_figure_policy,
         "js_table": bool(args.js_table),
         "sample_check_mode": args.sample_check_mode,
         "sample_check": sample_check,

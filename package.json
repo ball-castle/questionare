@@ -6,7 +6,8 @@
   "scripts": {
     "render:md-docx": "node scripts/js/markdown_to_docx.mjs",
     "render:outline-tables": "node scripts/js/render_pretty_tables.mjs --tables-dir output/tables --output-xlsx output/大纲数据总表_880.xlsx --title 大纲数据总表（880口径）",
-    "report:fill-doc": "node scripts/js/build_doc_report.mjs"
+    "report:fill-doc": "node scripts/js/build_doc_report.mjs",
+    "report:update-ch67-docx": "node scripts/js/update_ch6_ch7_docx.mjs --template 六七章.docx --data-dir data/data_analysis --source-dir data/data_analysis/_source_analysis --output doc/六七章_基于data_analysis_更新.docx"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.8.10",
