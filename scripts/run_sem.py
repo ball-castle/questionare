@@ -43,6 +43,11 @@ S_environment ~~ S_service
 S_environment ~~ S_activity
 S_service ~~ S_activity
 R_visit ~~ R_recommend
+
+# same-dimension method-effect residuals (promotion/word-of-mouth/online seeding)
+C062 ~~ C063
+C063 ~~ C065
+C062 ~~ C065
 """
 
 MODEL_DESC_INTENT_PARTIAL_V1 = """
@@ -58,7 +63,18 @@ R_intent ~ O_cognition + S_environment + S_service + S_activity
 S_environment ~~ S_service
 S_environment ~~ S_activity
 S_service ~~ S_activity
+
+# same-dimension method-effect residuals (promotion/word-of-mouth/online seeding)
+C062 ~~ C063
+C063 ~~ C065
+C062 ~~ C065
 """
+
+MEASUREMENT_ADJUSTMENTS = [
+    "C062 ~~ C063",
+    "C063 ~~ C065",
+    "C062 ~~ C065",
+]
 
 S_SERVICE_COLS = ["C052", "C053", "C054", "C062", "C063", "C065"]
 S_ENV_COLS = ["C058", "C059", "C060", "C061"]
@@ -1078,6 +1094,8 @@ def main() -> None:
     audit = {
         "generated_at_utc": now_iso(),
         "source_script": "run_sem.py",
+        "sem_revision": "service_method_effect_v2",
+        "measurement_adjustments": MEASUREMENT_ADJUSTMENTS,
         "model_suite": args.model_suite,
         "fit_standard": args.fit_standard,
         "input": input_meta,

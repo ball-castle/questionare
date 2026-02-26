@@ -1,0 +1,8 @@
+﻿假设,路径,主样本β,主样本p值,稳健样本β,稳健样本p值,主样本方向,稳健样本方向,方向一致性
+NH1,S_env -> O_cognition,0.2624,0.0000,0.1670,0.1083,正向,正向,True
+NH2,S_service -> O_cognition,0.3538,0.0000,0.1887,0.2105,正向,正向,True
+NH3,S_activity -> O_cognition,0.2003,0.0000,0.5883,0.0005,正向,正向,True
+NH4,O_cognition -> R_intent,0.0964,0.0766,-0.0873,0.7129,正向,负向,False
+NH5,S_env -> R_intent,0.1409,0.0041,0.3219,0.0278,正向,正向,True
+NH6,S_service -> R_intent,0.2761,0.0000,0.1175,0.5605,正向,正向,True
+NH7,S_activity -> R_intent,0.1798,0.0006,0.4171,0.1461,正向,正向,True
