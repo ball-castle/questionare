@@ -1,0 +1,5 @@
+﻿对比,n,路径,标准化系数β,非标准化系数,Std.Err,p值,结论,备注
+main,863,NH4: O_cognition -> R_intent,0.1468,0.1312,0.0468,0.0050,基准主样本,用于正文主结果
+attention_pass_eq1==1,108,NH4: O_cognition -> R_intent,-0.0747,-0.0626,0.2026,0.7573,稳健性子样本,子样本直接估计
+attention_pass_eq1==0,755,NH4: O_cognition -> R_intent,0.1509,0.1403,0.0498,0.0048,非通过组,与通过组构成互斥两组
+Wald(pass_vs_fail),863,NH4: O_cognition -> R_intent,,,,0.3308,组间差异不显著,-0.9725

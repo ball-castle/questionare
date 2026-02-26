@@ -1,0 +1,6 @@
+﻿假设,路径,标准化系数β,p值,结论,状态,备注
+H1,S_env -> O_cognition,0.1784,0.0763,不支持,ready,attention_pass_eq1==1 子样本（直接路径）
+H2,S_service -> O_cognition,0.2013,0.1381,不支持,ready,attention_pass_eq1==1 子样本（直接路径）
+H3,S_activity -> O_cognition,0.5853,0.0002,支持,ready,attention_pass_eq1==1 子样本（直接路径）
+H4,O_cognition -> R_visit,0.4873,0.0000,支持,ready,attention_pass_eq1==1 子样本（直接路径）
+H5,O_cognition -> R_recommend,0.5096,0.0000,支持,ready,attention_pass_eq1==1 子样本（直接路径）

@@ -1,0 +1,6 @@
+﻿层级,分组,n,CMIN/DF,RMSEA,CFI,TLI,SRMR,全部达标,备注
+Configural,attention_pass_eq1==1,108,1.3854,0.0600,0.9566,0.9466,0.0639,True,同一因子结构，自由载荷
+Configural,attention_pass_eq1==0,755,2.0473,0.0373,0.9706,0.9638,0.0653,True,同一因子结构，自由载荷
+Metric(近似),attention_pass_eq1==1,108,1.3805,0.0596,0.9528,0.9473,0.0919,False,载荷固定为共同参照值
+Metric(近似),attention_pass_eq1==0,755,1.9320,0.0352,0.9712,0.9678,0.0586,True,载荷固定为共同参照值
+Summary,weighted,863,,,0.9689,,,True,"weighted CFI: configural=0.9688, metric=0.9689, ΔCFI(metric-configural)=0.0001"

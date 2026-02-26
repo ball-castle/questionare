@@ -1,0 +1,8 @@
+﻿假设,路径,标准化系数β,p值,结论,状态,备注
+RH1,S_env -> O_cognition,0.1655,0.1071,不支持,ready,attention_pass_eq1==1 子样本（降复杂度模型）
+RH2,S_service -> O_cognition,0.2060,0.1406,不支持,ready,attention_pass_eq1==1 子样本（降复杂度模型）
+RH3,S_activity -> O_cognition,0.5796,0.0004,支持,ready,attention_pass_eq1==1 子样本（降复杂度模型）
+RH4,O_cognition -> R_sum,-0.0662,0.7596,不支持,ready,attention_pass_eq1==1 子样本（降复杂度模型）
+RH5,S_env -> R_sum,0.2933,0.0228,支持,ready,attention_pass_eq1==1 子样本（降复杂度模型）
+RH6,S_service -> R_sum,0.0502,0.7689,不支持,ready,attention_pass_eq1==1 子样本（降复杂度模型）
+RH7,S_activity -> R_sum,0.4061,0.1074,不支持,ready,attention_pass_eq1==1 子样本（降复杂度模型）
