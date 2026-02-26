@@ -9,4 +9,5 @@ dependencies = [
     "numpy>=2.4.2",
     "python-docx>=1.2.0",
     "scipy>=1.17.0",
+    "semopy>=2.3,<3",
 ]

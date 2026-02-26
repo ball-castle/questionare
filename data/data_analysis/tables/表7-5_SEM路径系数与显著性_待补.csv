@@ -1,0 +1,9 @@
+﻿假设,路径,标准化系数β,p值,结论,状态,备注
+H1,S_env -> O_cognition,待补,待补,支持/不支持,pending,缺SEM路径估计
+H2,S_service -> O_cognition,待补,待补,支持/不支持,pending,缺SEM路径估计
+H3,S_activity -> O_cognition,待补,待补,支持/不支持,pending,缺SEM路径估计
+H4,O_cognition -> R_visit,待补,待补,支持/不支持,pending,缺SEM路径估计
+H5,O_cognition -> R_recommend,待补,待补,支持/不支持,pending,缺SEM路径估计
+H6,S_env -> O -> R,待补,待补,中介显著/不显著,pending,缺SEM中介估计
+H7,S_service -> O -> R,待补,待补,中介显著/不显著,pending,缺SEM中介估计
+H8,S_activity -> O -> R,待补,待补,中介显著/不显著,pending,缺SEM中介估计

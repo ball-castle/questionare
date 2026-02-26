@@ -1,0 +1,18 @@
+{
+  "name": "questionare-js-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render:md-docx": "node scripts/js/markdown_to_docx.mjs",
+    "render:outline-tables": "node scripts/js/render_pretty_tables.mjs --tables-dir output/tables --output-xlsx output/大纲数据总表_880.xlsx --title 大纲数据总表（880口径）",
+    "report:fill-doc": "node scripts/js/build_doc_report.mjs"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.8.10",
+    "docx": "^9.5.3",
+    "exceljs": "^4.4.0",
+    "jszip": "^3.10.1",
+    "xpath": "^0.0.34"
+  }
+}

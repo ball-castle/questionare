@@ -1,0 +1,208 @@
+{
+  "generated_at": "2026-02-26T07:11:09.537441+00:00",
+  "outline_docx": "六七章.docx",
+  "outline_sha256": "c10720f93e324d02a94f777ba142e72825cf212bdc0860e99cc738faa63bcc29",
+  "source_dir": "data/data_analysis/_source_analysis",
+  "processed_dir": "data/processed_880",
+  "output_dir": "data/data_analysis/_tmp_off_check",
+  "sample_n": 880,
+  "reuse_mode": "reuse_then_fill",
+  "sem_policy": "keep_placeholder",
+  "js_table": false,
+  "sample_check_mode": "off",
+  "sample_check": {
+    "sample_check_mode": "off",
+    "mode_note": "off",
+    "remain_n_revised": 861,
+    "survey_clean_rows": 861,
+    "logit_main_n": 861,
+    "logit_sensitivity_n": 106,
+    "valid_n_checks": {
+      "到访动机(16-23)": [
+        861
+      ],
+      "已到访痛点(33-42)": [
+        657
+      ],
+      "未到访阻碍(43-51)": [
+        204
+      ],
+      "新增项目(92-100)": [
+        861
+      ],
+      "促销偏好(101-107)": [
+        861
+      ]
+    },
+    "required_sample_n": 880,
+    "has_both_visit_status_blocks": true,
+    "checks": {
+      "sample_check_skipped": true
+    },
+    "pass": true
+  },
+  "items": [
+    {
+      "item_id": "table_6_1",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表6-1_双口径模型拟合指标对比.csv",
+      "source_path": "data/data_analysis/_source_analysis/tables/Logit模型指标.csv|data/data_analysis/_source_analysis/tables/Logit回归结果_主样本.csv|data/data_analysis/_source_analysis/tables/Logit回归结果_敏感性样本.csv",
+      "transform_rule": "双口径指标重整",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "table_7_1",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表7-1_两类游客画像关键特征对比.csv",
+      "source_path": "data/data_analysis/_source_analysis/tables/二阶聚类画像卡.csv",
+      "transform_rule": "按大纲宽表格式重排",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "table_7_2",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表7-2_分层运营落地矩阵.csv",
+      "source_path": "data/data_analysis/_source_analysis/tables/建议落地行动矩阵.csv|data/data_analysis/_source_analysis/tables/二阶聚类画像卡.csv|data/data_analysis/_source_analysis/tables/多选题选择率表.csv",
+      "transform_rule": "分群与偏好题重构",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "table_7_3",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表7-3_研究假设汇总_H1-H8.csv",
+      "source_path": "data/data_analysis/_source_analysis/tables/假设变量模型映射表.csv",
+      "transform_rule": "H1-H7复用，H8占位",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "table_7_4",
+      "status": "pending",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表7-4_SEM模型拟合指标_待补.csv",
+      "source_path": "",
+      "transform_rule": "按大纲固定字段占位",
+      "sample_check": true,
+      "pending_reason": "SEM结果缺失（按策略保留待补）"
+    },
+    {
+      "item_id": "table_7_5",
+      "status": "pending",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表7-5_SEM路径系数与显著性_待补.csv",
+      "source_path": "",
+      "transform_rule": "按大纲固定字段占位",
+      "sample_check": true,
+      "pending_reason": "SEM路径结果缺失（按策略保留待补）"
+    },
+    {
+      "item_id": "table_7_6",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表7-6_IPA四象限归属汇总_均值阈值.csv",
+      "source_path": "data/data_analysis/_source_analysis/tables/IPA阈值敏感性表.csv",
+      "transform_rule": "过滤均值阈值后按象限汇总",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "table_7_7",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表7-7_IPA整改行动清单.csv",
+      "source_path": "data/data_analysis/_source_analysis/tables/建议落地行动矩阵.csv|data/data_analysis/_source_analysis/tables/问题-证据-建议对照表.csv",
+      "transform_rule": "动作矩阵与证据对照表合并",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "table_7_8",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表7-8_游客意见三维汇总.csv",
+      "source_path": "data/data_analysis/_source_analysis/tables/多选题选择率表.csv",
+      "transform_rule": "按三维框架聚合多选题Top项",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "table_7_9",
+      "status": "pending",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表7-9_专家意见整合框架_待补.csv",
+      "source_path": "",
+      "transform_rule": "按大纲固定字段占位",
+      "sample_check": true,
+      "pending_reason": "专家访谈材料缺失（按策略保留待补）"
+    },
+    {
+      "item_id": "table_7_10",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/tables/表7-10_问题证据建议闭环汇总.csv",
+      "source_path": "data/data_analysis/_source_analysis/tables/问题-证据-建议对照表.csv|data/data_analysis/_source_analysis/tables/建议落地行动矩阵.csv|data/data_analysis/_source_analysis/tables/多选题选择率表.csv",
+      "transform_rule": "统计证据与游客声音填充，专家列保留待补",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "fig_6_4_mca",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/figures/MCA二维图.png",
+      "source_path": "data/data_analysis/_source_analysis/figures/MCA二维图.png",
+      "transform_rule": "直接复制可复用图",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "fig_7_1_ipa",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/figures/IPA象限图.png",
+      "source_path": "data/data_analysis/_source_analysis/figures/IPA象限图.png",
+      "transform_rule": "直接复制可复用图",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "fig_core_profile",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/figures/核心画像图_core_profile.png",
+      "source_path": "data/data_analysis/_source_analysis/figures/核心画像图_core_profile.png",
+      "transform_rule": "直接复制可复用图",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "fig_6_1_age_gender",
+      "status": "pending",
+      "output_path": "data/data_analysis/_tmp_off_check/figures/年龄段人数_性别堆叠图.png",
+      "source_path": "data/data_analysis/_source_analysis/figures/年龄段人数_性别堆叠图.png",
+      "transform_rule": "直接复制可复用图",
+      "sample_check": true,
+      "pending_reason": "源图缺失"
+    },
+    {
+      "item_id": "fig_data_6_2",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/figures_data/图6-2_消费梯度堆积图_数据.csv",
+      "source_path": "data/data_analysis/_source_analysis/tables/单选题频数百分比表.csv",
+      "transform_rule": "提取Q24/Q25分布数据",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "fig_data_6_3",
+      "status": "ready",
+      "output_path": "data/data_analysis/_tmp_off_check/figures_data/图6-3_动机排名条形图_数据.csv",
+      "source_path": "data/data_analysis/_source_analysis/tables/多选题选择率表.csv",
+      "transform_rule": "提取Q16-23动机Top排序",
+      "sample_check": true,
+      "pending_reason": ""
+    },
+    {
+      "item_id": "xlsx_bundle",
+      "status": "skipped",
+      "output_path": "data/data_analysis/_tmp_off_check/大纲数据总表_880.xlsx",
+      "source_path": "data/data_analysis/_tmp_off_check/tables/*.csv",
+      "transform_rule": "JS(exceljs)多sheet整表导出",
+      "sample_check": true,
+      "pending_reason": ""
+    }
+  ]
+}

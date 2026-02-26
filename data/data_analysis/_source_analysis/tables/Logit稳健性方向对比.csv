@@ -1,0 +1,9 @@
+﻿feature,main_sign,sensitivity_sign,reversed
+Q2_age_code,-1.0,1.0,1
+Q6_habit_code,1.0,1.0,0
+Q7_knowledge_code,-1.0,1.0,1
+Q8_visit_status_code,-1.0,-1.0,0
+perception_mean,1.0,1.0,0
+performance_mean,-1.0,1.0,1
+cognition_mean,1.0,-1.0,1
+motive_count,1.0,1.0,0

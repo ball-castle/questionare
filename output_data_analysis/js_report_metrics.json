@@ -1,0 +1,285 @@
+{
+  "input_xlsx": "data\\叶开泰问卷数据.xlsx",
+  "distributed_n": 1000,
+  "recovered_n": 1000,
+  "valid_n": 863,
+  "valid_rate_pct": 86.3,
+  "paragraphs": {
+    "formal_allocation": "正式调查按既定配额实施，累计发放问卷1000份，回收问卷1000份，质控后有效问卷863份（到访657份、未到访206份），有效率86.30%。",
+    "overall_summary": "本次调查累计发放问卷1000份，回收问卷1000份，质控后有效问卷863份（有效率86.30%）。以下为有效问卷样本的结构分析。",
+    "gender_age": "本次调查回收有效问卷共863份，在所有受访者中，男女比例为443:420（51.33%:48.67%）。从年龄分布看，18岁以下占4.17%，18-25岁占36.38%，26-45岁占32.44%，46-64岁占17.61%，65岁及以上占9.39%。"
+  },
+  "tables": {
+    "table3_reliability": [
+      {
+        "dim_name": "文化体验维度",
+        "item_count": 3,
+        "alpha": 0.807,
+        "grade": "良好",
+        "n_complete": 863
+      },
+      {
+        "dim_name": "非遗体验维度",
+        "item_count": 2,
+        "alpha": 0.7067,
+        "grade": "可接受",
+        "n_complete": 863
+      },
+      {
+        "dim_name": "产品体验维度",
+        "item_count": 3,
+        "alpha": 0.747,
+        "grade": "可接受",
+        "n_complete": 863
+      },
+      {
+        "dim_name": "配套保障维度",
+        "item_count": 4,
+        "alpha": 0.8282,
+        "grade": "良好",
+        "n_complete": 863
+      },
+      {
+        "dim_name": "宣传策略维度",
+        "item_count": 3,
+        "alpha": 0.7852,
+        "grade": "可接受",
+        "n_complete": 863
+      },
+      {
+        "dim_name": "整体量表",
+        "item_count": 13,
+        "alpha": 0.8301,
+        "grade": "良好",
+        "n_complete": 863
+      }
+    ],
+    "table4_validity": {
+      "kmo": 0.8306,
+      "bartlett_chi2": 3847.591,
+      "bartlett_df": 78,
+      "bartlett_p": "<0.001",
+      "n_complete": 863
+    },
+    "table5_sample_structure": [
+      {
+        "var_name": "文化程度",
+        "attr": "初中及以下",
+        "count": 69,
+        "pct": "8.00%",
+        "total": "100%"
+      },
+      {
+        "var_name": "",
+        "attr": "中专/高中",
+        "count": 95,
+        "pct": "11.01%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "大专",
+        "count": 204,
+        "pct": "23.64%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "本科",
+        "count": 332,
+        "pct": "38.47%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "硕士及以上",
+        "count": 163,
+        "pct": "18.89%",
+        "total": ""
+      },
+      {
+        "var_name": "职业",
+        "attr": "学生",
+        "count": 46,
+        "pct": "5.33%",
+        "total": "100%"
+      },
+      {
+        "var_name": "",
+        "attr": "企业/公司职员",
+        "count": 337,
+        "pct": "39.05%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "事业单位人员/公务员",
+        "count": 83,
+        "pct": "9.62%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "自由职业者",
+        "count": 155,
+        "pct": "17.96%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "个体经营者",
+        "count": 111,
+        "pct": "12.86%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "服务业从业者",
+        "count": 91,
+        "pct": "10.54%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "离退休人员",
+        "count": 0,
+        "pct": "0.00%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "其他",
+        "count": 40,
+        "pct": "4.63%",
+        "total": ""
+      },
+      {
+        "var_name": "月收入",
+        "attr": "3000元以下",
+        "count": 128,
+        "pct": "14.83%",
+        "total": "100%"
+      },
+      {
+        "var_name": "",
+        "attr": "3001-5000元",
+        "count": 232,
+        "pct": "26.88%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "5001-8000元",
+        "count": 311,
+        "pct": "36.04%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "8001-15000元",
+        "count": 153,
+        "pct": "17.73%",
+        "total": ""
+      },
+      {
+        "var_name": "",
+        "attr": "15000元以上",
+        "count": 39,
+        "pct": "4.52%",
+        "total": ""
+      }
+    ],
+    "table5_valid_count": 863,
+    "pretest_policy": "keep_pending"
+  },
+  "age_gender": {
+    "order": [
+      1,
+      3,
+      2,
+      4,
+      5
+    ],
+    "labels": {
+      "1": "18岁以下",
+      "3": "18-25岁",
+      "2": "26-45岁",
+      "4": "46-64岁",
+      "5": "65岁及以上"
+    },
+    "counts": {
+      "1": {
+        "1": 18,
+        "2": 18
+      },
+      "3": {
+        "1": 159,
+        "2": 155
+      },
+      "2": {
+        "1": 142,
+        "2": 138
+      },
+      "4": {
+        "1": 75,
+        "2": 77
+      },
+      "5": {
+        "1": 49,
+        "2": 32
+      }
+    },
+    "rows": [
+      {
+        "age_code": 1,
+        "age_label": "18岁以下",
+        "male": 18,
+        "female": 18,
+        "total": 36,
+        "pct": 4.17
+      },
+      {
+        "age_code": 3,
+        "age_label": "18-25岁",
+        "male": 159,
+        "female": 155,
+        "total": 314,
+        "pct": 36.38
+      },
+      {
+        "age_code": 2,
+        "age_label": "26-45岁",
+        "male": 142,
+        "female": 138,
+        "total": 280,
+        "pct": 32.44
+      },
+      {
+        "age_code": 4,
+        "age_label": "46-64岁",
+        "male": 75,
+        "female": 77,
+        "total": 152,
+        "pct": 17.61
+      },
+      {
+        "age_code": 5,
+        "age_label": "65岁及以上",
+        "male": 49,
+        "female": 32,
+        "total": 81,
+        "pct": 9.39
+      }
+    ]
+  },
+  "artifacts": {
+    "age_gender_figure": "output_data_analysis\\figures\\年龄段人数_性别堆叠图.png"
+  },
+  "style_constants": {
+    "male_color": "#BFE3C0",
+    "female_color": "#2E7D32",
+    "core_color": "#1f77b4",
+    "ipa_color": "#2ca02c",
+    "aux_color": "gray"
+  }
+}
