@@ -1,6 +1,0 @@
-﻿指标,值,结论,状态,备注
-CMIN/DF,5.5918,未达标,ready,阈值：<3.00（national_common）; optimizer=SLSQP
-RMSEA,0.0730,达标,ready,阈值：<0.08（national_common）; optimizer=SLSQP
-CFI,0.8982,未达标,ready,阈值：>0.90（national_common）; optimizer=SLSQP
-TLI,0.8774,未达标,ready,阈值：>0.90（national_common）; optimizer=SLSQP
-SRMR,0.0578,达标,ready,阈值：<0.08（national_common）; optimizer=SLSQP

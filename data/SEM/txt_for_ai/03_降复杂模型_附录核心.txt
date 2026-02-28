@@ -1,0 +1,43 @@
+﻿SEM降复杂模型（附录核心）
+生成时间: 2026-02-26 23:37:25
+来源目录: data/data_SEM_21
+分隔符说明: 列之间为Tab（\t）
+
+文件: 表7-4_SEM模型拟合指标_降复杂模型.csv
+指标	值	结论	状态	备注
+CMIN/DF	2.4270	达标	ready	阈值：<3.00（national_common）; optimizer=SLSQP
+RMSEA	0.0407	达标	ready	阈值：<0.08（national_common）; optimizer=SLSQP
+CFI	0.9710	达标	ready	阈值：>0.90（national_common）; optimizer=SLSQP
+TLI	0.9639	达标	ready	阈值：>0.90（national_common）; optimizer=SLSQP
+SRMR	0.0687	达标	ready	阈值：<0.08（national_common）; optimizer=SLSQP
+
+文件: 表7-5_SEM路径系数与显著性_降复杂模型.csv
+假设	路径	标准化系数β	p值	结论	状态	备注
+RH1	S_env -> O_cognition	0.3056	0.0000	支持	ready	降复杂度模型（R_sum观测合成）
+RH2	S_service -> O_cognition	0.2430	0.0000	支持	ready	降复杂度模型（R_sum观测合成）
+RH3	S_activity -> O_cognition	0.2524	0.0000	支持	ready	降复杂度模型（R_sum观测合成）
+RH4	O_cognition -> R_sum	0.1224	0.0065	支持	ready	降复杂度模型（R_sum观测合成）
+RH5	S_env -> R_sum	0.1365	0.0013	支持	ready	降复杂度模型（R_sum观测合成）
+RH6	S_service -> R_sum	0.1587	0.0002	支持	ready	降复杂度模型（R_sum观测合成）
+RH7	S_activity -> R_sum	0.1789	0.0001	支持	ready	降复杂度模型（R_sum观测合成）
+
+文件: 表7-5_SEM路径系数与显著性_attention_pass_降复杂模型.csv
+假设	路径	标准化系数β	p值	结论	状态	备注
+RH1	S_env -> O_cognition	0.1655	0.1071	不支持	ready	attention_pass_eq1==1 子样本（降复杂度模型）
+RH2	S_service -> O_cognition	0.2060	0.1406	不支持	ready	attention_pass_eq1==1 子样本（降复杂度模型）
+RH3	S_activity -> O_cognition	0.5796	0.0004	支持	ready	attention_pass_eq1==1 子样本（降复杂度模型）
+RH4	O_cognition -> R_sum	-0.0662	0.7596	不支持	ready	attention_pass_eq1==1 子样本（降复杂度模型）
+RH5	S_env -> R_sum	0.2933	0.0228	支持	ready	attention_pass_eq1==1 子样本（降复杂度模型）
+RH6	S_service -> R_sum	0.0502	0.7689	不支持	ready	attention_pass_eq1==1 子样本（降复杂度模型）
+RH7	S_activity -> R_sum	0.4061	0.1074	不支持	ready	attention_pass_eq1==1 子样本（降复杂度模型）
+
+文件: SEM_稳健性对比_降复杂模型.csv
+假设	路径	主样本β	主样本p值	稳健样本β	稳健样本p值	主样本方向	稳健样本方向	方向一致性
+RH1	S_env -> O_cognition	0.3056	0.0000	0.1655	0.1071	正向	正向	True
+RH2	S_service -> O_cognition	0.2430	0.0000	0.2060	0.1406	正向	正向	True
+RH3	S_activity -> O_cognition	0.2524	0.0000	0.5796	0.0004	正向	正向	True
+RH4	O_cognition -> R_sum	0.1224	0.0065	-0.0662	0.7596	正向	负向	False
+RH5	S_env -> R_sum	0.1365	0.0013	0.2933	0.0228	正向	正向	True
+RH6	S_service -> R_sum	0.1587	0.0002	0.0502	0.7689	正向	正向	True
+RH7	S_activity -> R_sum	0.1789	0.0001	0.4061	0.1074	正向	正向	True
+

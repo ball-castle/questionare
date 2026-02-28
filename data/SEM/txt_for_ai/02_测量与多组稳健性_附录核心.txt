@@ -1,0 +1,31 @@
+﻿SEM测量与多组稳健性（附录核心）
+生成时间: 2026-02-26 23:37:25
+来源目录: data/data_SEM_21
+分隔符说明: 列之间为Tab（\t）
+
+文件: SEM_CFA对照_残差相关.csv
+模型	CMIN/DF	RMSEA	CFI	TLI	SRMR	全部达标	ΔCFI_相对含残差	ΔRMSEA_相对含残差	备注
+CFA_含残差相关	2.2106	0.0375	0.9737	0.9677	0.0670	True	0.0000	0.0000	用于证明同方法效应已被测量层吸收
+CFA_去残差相关	5.5918	0.0730	0.8982	0.8774	0.0578	False	-0.0755	0.0355	若CFI下降/RMSEA上升，支持残差相关为方法效应而非结构后验调参
+
+文件: SEM_多组检验_CFA.csv
+层级	分组	n	CMIN/DF	RMSEA	CFI	TLI	SRMR	全部达标	备注
+Configural	attention_pass_eq1==1	108	1.3854	0.0600	0.9566	0.9466	0.0639	True	同一因子结构，自由载荷
+Configural	attention_pass_eq1==0	755	2.0473	0.0373	0.9706	0.9638	0.0653	True	同一因子结构，自由载荷
+Metric(近似)	attention_pass_eq1==1	108	1.3805	0.0596	0.9528	0.9473	0.0919	False	载荷固定为共同参照值
+Metric(近似)	attention_pass_eq1==0	755	1.9320	0.0352	0.9712	0.9678	0.0586	True	载荷固定为共同参照值
+Summary	weighted	863			0.9689			True	weighted CFI: configural=0.9688, metric=0.9689, ΔCFI(metric-configural)=0.0001
+
+文件: SEM_多组检验_NH4.csv
+对比	n	路径	标准化系数β	非标准化系数	Std.Err	p值	结论	备注
+main	863	NH4: O_cognition -> R_intent	0.1468	0.1312	0.0468	0.0050	基准主样本	用于正文主结果
+attention_pass_eq1==1	108	NH4: O_cognition -> R_intent	-0.0747	-0.0626	0.2026	0.7573	稳健性子样本	子样本直接估计
+attention_pass_eq1==0	755	NH4: O_cognition -> R_intent	0.1509	0.1403	0.0498	0.0048	非通过组	与通过组构成互斥两组
+Wald(pass_vs_fail)	863	NH4: O_cognition -> R_intent				0.3308	组间差异不显著	-0.9725
+
+文件: SEM_注意力敏感性_eq5.csv
+subset_rule	n	占主样本比例	NH4_标准化系数β	NH4_p值	方向	备注
+main(all)	863	1.0000	0.1468	0.0050	正向	主样本基准
+attention_pass_eq1==1	108	0.1251	-0.0747	0.7573	负向	稳健性主口径
+attention_pass_eq5==1	247	0.2862	0.0438	0.5694	正向	敏感性一行检查
+

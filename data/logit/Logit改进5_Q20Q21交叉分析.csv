@@ -1,0 +1,10 @@
+﻿metric,value,note
+n_total,861.0,Q20与Q21同时有效样本
+p_q21_high_given_q20_high,0.7904085257548845,P(Q21=1 | Q20=1)
+p_q21_high_given_q20_low,0.2986577181208054,P(Q21=1 | Q20=0)
+rate_diff_q21_by_q20,0.49175080763407913,两组推荐率差值
+odds_ratio_q20_to_q21_unadjusted,8.855932203389083,未控制变量的2x2优势比
+cell_q20_1_q21_1,445.0,计数
+cell_q20_1_q21_0,118.0,计数
+cell_q20_0_q21_1,89.0,计数
+cell_q20_0_q21_0,209.0,计数

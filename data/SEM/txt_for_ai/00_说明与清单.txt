@@ -1,0 +1,18 @@
+﻿SEM_21 文本包说明
+生成时间: 2026-02-26 23:37:25
+目录: data\data_SEM_21\txt_for_ai
+
+关键审计信息:
+- n_rows_main: 863
+- n_rows_attention_pass: 108
+- n_rows_attention_fail: 755
+- model_suite: dual
+- fit_standard: national_common
+- subset_rule: attention_pass_eq1 == 1
+- sensitivity_rule: attention_pass_eq5 == 1
+
+文件清单:
+- 01_主模型_正文核心.txt
+- 02_测量与多组稳健性_附录核心.txt
+- 03_降复杂模型_附录核心.txt
+- 04_旧版兼容输出_备查.txt

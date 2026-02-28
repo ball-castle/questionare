@@ -1,4 +1,0 @@
-﻿模型ID,模型说明,CMIN/DF,RMSEA,CFI,TLI,SRMR,全部达标
-baseline_current,baseline_current,7.8821,0.0894,0.8432,0.8163,0.0783,False
-legacy_compat_v2,legacy_compat_v2,2.6105,0.0432,0.9643,0.9570,0.0790,True
-intent_partial_v1,intent_partial_v1,2.2106,0.0375,0.9737,0.9677,0.0670,True

@@ -1,0 +1,32 @@
+﻿SEM主模型（正文核心）
+生成时间: 2026-02-26 23:37:25
+来源目录: data/data_SEM_21
+分隔符说明: 列之间为Tab（\t）
+
+文件: 表7-4_SEM模型拟合指标_新模型.csv
+指标	值	结论	状态	备注
+CMIN/DF	2.2106	达标	ready	阈值：<3.00（national_common）; optimizer=SLSQP
+RMSEA	0.0375	达标	ready	阈值：<0.08（national_common）; optimizer=SLSQP
+CFI	0.9737	达标	ready	阈值：>0.90（national_common）; optimizer=SLSQP
+TLI	0.9677	达标	ready	阈值：>0.90（national_common）; optimizer=SLSQP
+SRMR	0.0670	达标	ready	阈值：<0.08（national_common）; optimizer=SLSQP
+
+文件: 表7-5_SEM路径系数与显著性_新模型.csv
+假设	路径	标准化系数β	p值	结论	状态	备注
+NH1	S_env -> O_cognition	0.3055	0.0000	支持	ready	直接路径（标准化系数）
+NH2	S_service -> O_cognition	0.2433	0.0000	支持	ready	直接路径（标准化系数）
+NH3	S_activity -> O_cognition	0.2525	0.0000	支持	ready	直接路径（标准化系数）
+NH4	O_cognition -> R_intent	0.1468	0.0050	支持	ready	直接路径（标准化系数）
+NH5	S_env -> R_intent	0.1567	0.0015	支持	ready	直接路径（标准化系数）
+NH6	S_service -> R_intent	0.1841	0.0003	支持	ready	直接路径（标准化系数）
+NH7	S_activity -> R_intent	0.2058	0.0001	支持	ready	直接路径（标准化系数）
+NH8	S_env -> O -> R_intent	indirect=0.0449	p_boot=0.0070;95%CI=[0.0138,0.0844]	中介显著	ready	bootstrap=2000;success=2000;fail=0
+NH9	S_service -> O -> R_intent	indirect=0.0357	p_boot=0.0070;95%CI=[0.0110,0.0693]	中介显著	ready	bootstrap=2000;success=2000;fail=0
+NH10	S_activity -> O -> R_intent	indirect=0.0371	p_boot=0.0070;95%CI=[0.0109,0.0705]	中介显著	ready	bootstrap=2000;success=2000;fail=0
+
+文件: SEM_模型对比.csv
+模型ID	模型说明	CMIN/DF	RMSEA	CFI	TLI	SRMR	全部达标
+baseline_current	baseline_current	7.8821	0.0894	0.8432	0.8163	0.0783	False
+legacy_compat_v2	legacy_compat_v2	2.6105	0.0432	0.9643	0.9570	0.0790	True
+intent_partial_v1	intent_partial_v1	2.2106	0.0375	0.9737	0.9677	0.0670	True
+
