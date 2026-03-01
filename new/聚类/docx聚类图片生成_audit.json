@@ -1,6 +1,6 @@
 {
   "任务": "根据 report (1).docx 生成聚类章节图片",
-  "生成时间": "2026-03-01T18:16:52",
+  "生成时间": "2026-03-01T21:53:48",
   "输入文件": {
     "聚类指标": "C:\\Users\\TSOU\\Desktop\\聚类数据捏造\\kmeans_metrics.csv",
     "原始问卷": "C:\\Users\\TSOU\\Desktop\\聚类数据捏造\\raw_survey_data.xlsx",

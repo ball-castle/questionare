@@ -93,53 +93,72 @@ def draw_quality_figure(metrics: pd.DataFrame, out_path: Path, dpi: int) -> dict
     if 4 in ks:
         labels[ks.index(4)] = "4类（最优）"
 
-    colors = ["#90A4AE" if k != 4 else "#E74C3C" for k in ks]
+    bar_colors = ["#8EA0AA" if k != 4 else "#E74C3C" for k in ks]
+    line_color = "#2C7FB8"
 
-    fig, axes = plt.subplots(1, 2, figsize=(14.5, 5.6))
+    # 合并为单图双轴，提升插入 docx 后的可读性
+    fig, ax = plt.subplots(figsize=(8.6, 6.4))
+    x = np.arange(len(labels))
 
-    ax = axes[0]
-    bars = ax.bar(labels, sils, color=colors, width=0.52, edgecolor="white")
+    bars = ax.bar(x, sils, color=bar_colors, width=0.52, edgecolor="white", label="轮廓系数")
     ax.axhline(0.62, color="#2E9F62", linestyle="--", linewidth=1.8, label="良好阈值（0.62）")
     ax.axhline(0.68, color="#E7A73D", linestyle="--", linewidth=1.8, label="优秀阈值（0.68）")
-    for b, v in zip(bars, sils):
-        ax.text(b.get_x() + b.get_width() / 2, v + 0.015, f"{v:.4f}", ha="center", va="bottom", fontsize=10, weight="bold")
+
+    for i, (b, v) in enumerate(zip(bars, sils)):
+        ax.text(
+            b.get_x() + b.get_width() / 2,
+            v + 0.016,
+            f"{v:.4f}",
+            ha="center",
+            va="bottom",
+            fontsize=12,
+            weight="bold",
+            color="#263238" if ks[i] != 4 else "#C62828",
+        )
+
+    ax.set_ylim(0, max(0.92, max(sils) + 0.2))
+    ax.set_ylabel("轮廓系数", fontsize=13)
+    ax.set_xlabel("聚类方案", fontsize=13)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, fontsize=13)
+    ax.tick_params(axis="y", labelsize=12)
+    ax.grid(axis="y", alpha=0.25)
+
+    ax2 = ax.twinx()
+    ax2.plot(x, chs, color=line_color, marker="o", linewidth=2.6, markersize=8, label="卡林斯基-哈拉巴斯指数")
+    for i, v in enumerate(chs):
+        ax2.text(
+            x[i],
+            v + 20,
+            f"{v:.1f}",
+            ha="center",
+            va="bottom",
+            fontsize=12,
+            weight="bold",
+            color=line_color,
+        )
+    y2_min = min(chs) * 0.78
+    y2_max = max(chs) * 1.15
+    ax2.set_ylim(y2_min, y2_max)
+    ax2.set_ylabel("卡林斯基-哈拉巴斯指数", fontsize=13, color=line_color)
+    ax2.tick_params(axis="y", labelsize=12, colors=line_color)
+
     if 4 in ks:
         idx = ks.index(4)
         ax.annotate(
-            f"4类方案轮廓系数={sils[idx]:.4f}",
-            xy=(idx, sils[idx]),
-            xytext=(idx - 0.2, sils[idx] + 0.12),
+            "四类方案最优",
+            xy=(x[idx], sils[idx]),
+            xytext=(x[idx] - 0.95, sils[idx] + 0.12),
             arrowprops=dict(arrowstyle="->", color="#C0392B", linewidth=1.2),
             color="#C0392B",
-            fontsize=10,
+            fontsize=12,
+            weight="bold",
         )
-    ax.set_ylim(0, max(0.9, max(sils) + 0.18))
-    ax.set_ylabel("轮廓系数", fontsize=12)
-    ax.set_xlabel("聚类方案", fontsize=12)
-    ax.set_title("聚类方案轮廓系数对比", fontsize=14, pad=12)
-    ax.grid(axis="y", alpha=0.25)
-    ax.legend(frameon=False, loc="upper left", fontsize=10)
 
-    ax = axes[1]
-    bars = ax.bar(labels, chs, color=colors, width=0.52, edgecolor="white")
-    for b, v in zip(bars, chs):
-        ax.text(b.get_x() + b.get_width() / 2, v + 12, f"{v:.1f}", ha="center", va="bottom", fontsize=12, weight="bold")
-    if 4 in ks:
-        idx = ks.index(4)
-        ax.annotate(
-            "4类方案指数最高",
-            xy=(idx, chs[idx]),
-            xytext=(idx - 0.8, chs[idx] * 0.92),
-            arrowprops=dict(arrowstyle="->", color="#C0392B", linewidth=1.2),
-            color="#C0392B",
-            fontsize=11,
-        )
-    ax.set_ylabel("卡林斯基-哈拉巴斯指数", fontsize=12)
-    ax.set_xlabel("聚类方案", fontsize=12)
-    ax.set_title("聚类方案卡林斯基-哈拉巴斯指数对比", fontsize=14, pad=12)
-    ax.grid(axis="y", alpha=0.25)
+    h1, l1 = ax.get_legend_handles_labels()
+    h2, l2 = ax2.get_legend_handles_labels()
+    ax.legend(h1 + h2, l1 + l2, loc="upper left", frameon=False, fontsize=11)
 
-    fig.suptitle("聚类质量评估：二类、三类、四类方案对比", fontsize=18, y=1.02, weight="bold")
     fig.tight_layout()
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=dpi, bbox_inches="tight")
@@ -168,35 +187,35 @@ def draw_cluster_matrix_figure(features: pd.DataFrame, summary: pd.DataFrame, ou
             "weight": 1.00,
         },
         {
-            "name": "教育背景",
+            "name": "教育",
             "col": find_col(cols, ["教育程度_编码"]),
             "codes": [0, 1, 2, 3, 4],
             "labels": ["初中及以下", "中专/高中", "大专", "本科", "硕士及以上"],
             "weight": 0.48,
         },
         {
-            "name": "月可支配收入",
+            "name": "收入",
             "col": find_col(cols, ["月收入_编码"]),
             "codes": [0, 1, 2, 3, 4],
             "labels": ["3千以下", "3-5千", "5-8千", "8-15千", "15千以上"],
             "weight": 0.33,
         },
         {
-            "name": "数字化导览需求",
+            "name": "数字导览",
             "col": find_col(cols, ["数字化导览重要性"]),
             "codes": [1, 2, 3, 4, 5],
             "labels": ["1分", "2分", "3分", "4分", "5分"],
             "weight": 0.32,
         },
         {
-            "name": "中医药文化体验需求",
+            "name": "文化体验",
             "col": find_col(cols, ["中医药文化重要性"]),
             "codes": [1, 2, 3, 4, 5],
             "labels": ["1分", "2分", "3分", "4分", "5分"],
             "weight": 0.17,
         },
         {
-            "name": "交通便利需求",
+            "name": "交通便利",
             "col": find_col(cols, ["交通便利重要性"]),
             "codes": [1, 2, 3, 4, 5],
             "labels": ["1分", "2分", "3分", "4分", "5分"],
@@ -222,7 +241,8 @@ def draw_cluster_matrix_figure(features: pd.DataFrame, summary: pd.DataFrame, ou
 
     row_count = meta.shape[0]
     col_count = len(factors)
-    fig, axes = plt.subplots(row_count, col_count, figsize=(27, 11), sharey=True)
+    # 控制画布宽度，避免插入 docx 后整体缩放过大导致标题过小
+    fig, axes = plt.subplots(row_count, col_count, figsize=(18.5, 12.5), sharey=True)
 
     if row_count == 1:
         axes = np.array([axes])
@@ -232,6 +252,12 @@ def draw_cluster_matrix_figure(features: pd.DataFrame, summary: pd.DataFrame, ou
         2: "#6AB0DD",
         3: "#E4A564",
         4: "#B494C4",
+    }
+    class_label_map = {
+        1: "第一类",
+        2: "第二类",
+        3: "第三类",
+        4: "第四类",
     }
 
     for i, (_, row) in enumerate(meta.iterrows()):
@@ -275,10 +301,23 @@ def draw_cluster_matrix_figure(features: pd.DataFrame, summary: pd.DataFrame, ou
                 ax.set_xticklabels([])
 
             if i == 0:
-                ax.set_title(f"{factor['name']}\n（权重：{weight:.2f}）", fontsize=10, pad=7, weight="bold")
+                ax.set_title(
+                    f"{factor['name']}\n权重{weight:.2f}",
+                    fontsize=18,
+                    pad=10,
+                    weight="bold",
+                )
 
             if j == 0:
-                ax.set_ylabel(f"第{cid}类\n{cname}\n占比{cshare:.1f}%", fontsize=10, rotation=0, labelpad=44, va="center")
+                class_name = class_label_map.get(cid, f"第{cid}类")
+                ax.set_ylabel(
+                    f"{class_name}\n{cshare:.1f}%",
+                    fontsize=20,
+                    rotation=0,
+                    labelpad=54,
+                    va="center",
+                    weight="bold",
+                )
 
             for bar, val in zip(bars, dist.to_numpy()):
                 if val >= 10.0:
@@ -293,14 +332,7 @@ def draw_cluster_matrix_figure(features: pd.DataFrame, summary: pd.DataFrame, ou
                         weight="bold",
                     )
 
-    fig.suptitle(
-        "图55  叶开泰文化街区受访者聚类结果可视化\n"
-        "注：各列为聚类因子、各行为受访者类别；背景颜色深浅表示因子权重",
-        fontsize=16,
-        y=1.02,
-        weight="bold",
-    )
-    fig.tight_layout()
+    fig.tight_layout(rect=[0.06, 0.03, 1.0, 1.0])
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)

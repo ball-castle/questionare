@@ -1,92 +1,92 @@
 {
-  "generated_at": "2026-02-28T23:01:32",
-  "input_spec": "C:\\Users\\TSOU\\Desktop\\docx\\IPA\\图片需求.txt",
+  "generated_at": "2026-03-01T22:56:27",
+  "source_csv": "data\\data_analysis\\_source_analysis\\tables\\IPA结果表.csv",
   "output_dir": "data\\figure\\IPA",
   "thresholds": {
-    "importance_mean_line": 3.7672,
-    "performance_mean_line": 3.7061
+    "importance_mean_line": 3.7455284552845525,
+    "satisfaction_mean_line": 3.6896631823461092
   },
   "point_count": 10,
   "points": [
     {
-      "idx": "①",
-      "name": "中医药文化展示与非遗体验",
-      "importance": 3.812,
-      "performance": 3.751,
-      "reference_quadrant": "Q1",
-      "computed_quadrant": "Q1"
+      "item_no": 1,
+      "item_text": "①丰富的中医药文化展示和非遗体验项目",
+      "importance": 3.7560975609756095,
+      "satisfaction": 3.718931475029036,
+      "quadrant_from_csv": "Q1_优势区",
+      "quadrant_recomputed": "Q1_优势区"
     },
     {
-      "idx": "②",
-      "name": "环境舒适度与卫生状况",
-      "importance": 3.738,
-      "performance": 3.734,
-      "reference_quadrant": "Q2",
-      "computed_quadrant": "Q2"
+      "item_no": 2,
+      "item_text": "②环境舒适度与卫生状况",
+      "importance": 3.7409988385598143,
+      "satisfaction": 3.6666666666666665,
+      "quadrant_from_csv": "Q3_机会区",
+      "quadrant_recomputed": "Q3_机会区"
     },
     {
-      "idx": "③",
-      "name": "交通便捷与停车",
-      "importance": 3.719,
-      "performance": 3.668,
-      "reference_quadrant": "Q3",
-      "computed_quadrant": "Q3"
+      "item_no": 3,
+      "item_text": "③便捷的交通、充足的停车位",
+      "importance": 3.722415795586527,
+      "satisfaction": 3.6515679442508713,
+      "quadrant_from_csv": "Q3_机会区",
+      "quadrant_recomputed": "Q3_机会区"
     },
     {
-      "idx": "④",
-      "name": "亲友推荐/口碑",
-      "importance": 3.789,
-      "performance": 3.694,
-      "reference_quadrant": "Q4",
-      "computed_quadrant": "Q4"
+      "item_no": 4,
+      "item_text": "④亲友推荐/正面评价多",
+      "importance": 3.6887340301974447,
+      "satisfaction": 3.708478513356562,
+      "quadrant_from_csv": "Q2_维持区",
+      "quadrant_recomputed": "Q2_维持区"
     },
     {
-      "idx": "⑤",
-      "name": "特色美食与文创",
-      "importance": 3.731,
-      "performance": 3.642,
-      "reference_quadrant": "Q3",
-      "computed_quadrant": "Q3"
+      "item_no": 5,
+      "item_text": "⑤特色美食、文创产品的种类及品质",
+      "importance": 3.7398373983739837,
+      "satisfaction": 3.5900116144018583,
+      "quadrant_from_csv": "Q3_机会区",
+      "quadrant_recomputed": "Q3_机会区"
     },
     {
-      "idx": "⑥",
-      "name": "个性化体质辨识/养生咨询",
-      "importance": 3.805,
-      "performance": 3.744,
-      "reference_quadrant": "Q1",
-      "computed_quadrant": "Q1"
+      "item_no": 6,
+      "item_text": "⑥提供个性化中医体质辨识、养生咨询等服务",
+      "importance": 3.7642276422764227,
+      "satisfaction": 3.7096399535423927,
+      "quadrant_from_csv": "Q1_优势区",
+      "quadrant_recomputed": "Q1_优势区"
     },
     {
-      "idx": "⑦",
-      "name": "服务专业度与态度",
-      "importance": 3.836,
-      "performance": 3.756,
-      "reference_quadrant": "Q1",
-      "computed_quadrant": "Q1"
+      "item_no": 7,
+      "item_text": "⑦服务专业度与态度",
+      "importance": 3.826945412311266,
+      "satisfaction": 3.722415795586527,
+      "quadrant_from_csv": "Q1_优势区",
+      "quadrant_recomputed": "Q1_优势区"
     },
     {
-      "idx": "⑧",
-      "name": "产品价格与优惠",
-      "importance": 3.768,
-      "performance": 3.704,
-      "reference_quadrant": "Q3/Q4",
-      "computed_quadrant": "Q4"
+      "item_no": 8,
+      "item_text": "⑧产品价格与优惠力度",
+      "importance": 3.7340301974448318,
+      "satisfaction": 3.6933797909407664,
+      "quadrant_from_csv": "Q2_维持区",
+      "quadrant_recomputed": "Q2_维持区"
     },
     {
-      "idx": "⑨",
-      "name": "中医药服务专业度",
-      "importance": 3.824,
-      "performance": 3.737,
-      "reference_quadrant": "Q1",
-      "computed_quadrant": "Q1"
+      "item_no": 9,
+      "item_text": "⑨中医药服务专业度",
+      "importance": 3.7932636469221834,
+      "satisfaction": 3.6957026713124272,
+      "quadrant_from_csv": "Q1_优势区",
+      "quadrant_recomputed": "Q1_优势区"
     },
     {
-      "idx": "⑩",
-      "name": "线上线下宣传推广",
-      "importance": 3.781,
-      "performance": 3.683,
-      "reference_quadrant": "Q4",
-      "computed_quadrant": "Q4"
+      "item_no": 10,
+      "item_text": "⑩线上线下宣传推广",
+      "importance": 3.6887340301974447,
+      "satisfaction": 3.7398373983739837,
+      "quadrant_from_csv": "Q2_维持区",
+      "quadrant_recomputed": "Q2_维持区"
     }
   ],
   "outputs": {

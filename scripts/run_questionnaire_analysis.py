@@ -182,17 +182,17 @@ def plot_cluster(rows, out):
 
 
 def plot_ipa(ipa_rows, xm, ym, out):
-    x = np.array([r["performance_mean"] for r in ipa_rows])
-    y = np.array([r["importance_mean"] for r in ipa_rows])
+    x = np.array([r["importance_mean"] for r in ipa_rows])
+    y = np.array([r["performance_mean"] for r in ipa_rows])
     plt.figure(figsize=(9, 7))
     plt.scatter(x, y, c="#2ca02c")
     for i in range(len(ipa_rows)):
         plt.text(x[i], y[i], str(i + 1), fontsize=9)
     plt.axvline(xm, c="gray", ls="--")
     plt.axhline(ym, c="gray", ls="--")
-    plt.title("IPA 重要度-表现度矩阵")
-    plt.xlabel("表现度均值")
-    plt.ylabel("重要度均值")
+    plt.title("IPA 重要度-满意度矩阵")
+    plt.xlabel("重要度均值")
+    plt.ylabel("满意度均值")
     plt.tight_layout()
     out.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out, dpi=180)
@@ -815,29 +815,29 @@ def main():
     for i in range(10):
         ci, cp = 66 + i, 76 + i
         im, pm = float(np.nanmean(num_main[:, ci - 1])), float(np.nanmean(num_main[:, cp - 1]))
-        if im >= oi and pm < op:
-            q = "Q2_优先改进"
-        elif im >= oi and pm >= op:
-            q = "Q1_保持优势"
+        if im >= oi and pm >= op:
+            q = "Q1_优势区"
+        elif im < oi and pm >= op:
+            q = "Q2_维持区"
         elif im < oi and pm < op:
-            q = "Q3_低优先级"
+            q = "Q3_机会区"
         else:
-            q = "Q4_可能过度投入"
+            q = "Q4_改进区"
         ipa.append({"item_no": i + 1, "importance_col": ci, "performance_col": cp, "item_text": headers[ci - 1], "importance_mean": im, "performance_mean": pm, "gap_perf_minus_imp": pm - im, "quadrant": q})
     write_dict_csv(tdir / "IPA结果表.csv", ["item_no", "importance_col", "performance_col", "item_text", "importance_mean", "performance_mean", "gap_perf_minus_imp", "quadrant"], ipa)
-    ip = sorted([r for r in ipa if r["quadrant"] == "Q2_优先改进"], key=lambda x: x["gap_perf_minus_imp"])
+    ip = sorted([r for r in ipa if r["quadrant"] == "Q4_改进区"], key=lambda x: x["gap_perf_minus_imp"])
     write_dict_csv(
         tdir / "IPA整改优先级表.csv",
         ["item_no", "importance_col", "performance_col", "item_text", "importance_mean", "performance_mean", "gap_perf_minus_imp", "quadrant"],
         ip,
     )
-    plot_ipa(ipa, op, oi, fdir / "IPA象限图.png")
+    plot_ipa(ipa, oi, op, fdir / "IPA象限图.png")
 
     top_new = sorted([r for r in mrows if 92 <= r["col_idx"] <= 100], key=lambda x: x["selected_pct"], reverse=True)[:3]
     top_pro = sorted([r for r in mrows if 101 <= r["col_idx"] <= 107], key=lambda x: x["selected_pct"], reverse=True)[:3]
     sug, rk = [], 1
     for r in ip[:3]:
-        sug.append({"priority": rk, "problem": f"高重要度低表现：{r['item_text']}", "evidence": f"重要度均值{r['importance_mean']:.3f}，表现均值{r['performance_mean']:.3f}，差值{r['gap_perf_minus_imp']:.3f}", "suggestion": "纳入季度优先整改清单，配置专项预算和KPI跟踪。"})
+        sug.append({"priority": rk, "problem": f"高重要度低满意：{r['item_text']}", "evidence": f"重要度均值{r['importance_mean']:.3f}，满意度均值{r['performance_mean']:.3f}，差值{r['gap_perf_minus_imp']:.3f}", "suggestion": "纳入季度优先整改清单，配置专项预算和KPI跟踪。"})
         rk += 1
     for r in top_new:
         sug.append({"priority": rk, "problem": f"新增项目需求集中于：{r['item_text']}", "evidence": f"选择率{r['selected_pct']:.2f}%（{r['selected_count']}/{r['valid_n']}）", "suggestion": "优先开发该类中医药文旅产品，做小规模A/B试点后扩容。"})
@@ -882,10 +882,10 @@ def main():
     if ip:
         for r in ip[:6]:
             sum_lines.append(
-                f"- [{r['item_no']}] {r['item_text']} | 重要度={r['importance_mean']:.3f}, 表现度={r['performance_mean']:.3f}, 差值={r['gap_perf_minus_imp']:.3f}"
+                f"- [{r['item_no']}] {r['item_text']} | 重要度={r['importance_mean']:.3f}, 满意度={r['performance_mean']:.3f}, 差值={r['gap_perf_minus_imp']:.3f}"
             )
     else:
-        sum_lines.append("- 当前无落入Q2（高重要度低表现）的条目。")
+        sum_lines.append("- 当前无落入Q4（高重要度低满意）的条目。")
     sum_lines += ["", "五、注意力题双口径敏感性对比"]
     for row in dual_rows:
         sum_lines.append(

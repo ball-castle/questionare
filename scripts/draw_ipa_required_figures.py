@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import json
 from dataclasses import dataclass
 from datetime import datetime
@@ -19,139 +20,134 @@ plt.rcParams["font.sans-serif"] = [
 plt.rcParams["axes.unicode_minus"] = False
 
 
-THRESH_IMPORTANCE = 3.7672
-THRESH_PERFORMANCE = 3.7061
-
-
 @dataclass(frozen=True)
-class IpaPoint:
-    idx: str
-    name: str
+class Point:
+    item_no: int
+    item_text: str
     importance: float
-    performance: float
-    reference_quadrant: str
+    satisfaction: float
+    quadrant_from_csv: str
 
 
-POINTS = [
-    IpaPoint("①", "中医药文化展示与非遗体验", 3.812, 3.751, "Q1"),
-    IpaPoint("②", "环境舒适度与卫生状况", 3.738, 3.734, "Q2"),
-    IpaPoint("③", "交通便捷与停车", 3.719, 3.668, "Q3"),
-    IpaPoint("④", "亲友推荐/口碑", 3.789, 3.694, "Q4"),
-    IpaPoint("⑤", "特色美食与文创", 3.731, 3.642, "Q3"),
-    IpaPoint("⑥", "个性化体质辨识/养生咨询", 3.805, 3.744, "Q1"),
-    IpaPoint("⑦", "服务专业度与态度", 3.836, 3.756, "Q1"),
-    IpaPoint("⑧", "产品价格与优惠", 3.768, 3.704, "Q3/Q4"),
-    IpaPoint("⑨", "中医药服务专业度", 3.824, 3.737, "Q1"),
-    IpaPoint("⑩", "线上线下宣传推广", 3.781, 3.683, "Q4"),
-]
+SHORT_LABELS = {
+    1: "中医药文化展示/非遗体验",
+    2: "环境舒适度与卫生状况",
+    3: "交通便捷与停车",
+    4: "亲友推荐/口碑",
+    5: "特色美食与文创",
+    6: "个性化体质辨识/养生咨询",
+    7: "服务专业度与态度",
+    8: "产品价格与优惠",
+    9: "中医药服务专业度",
+    10: "线上线下宣传推广",
+}
 
 
-def quadrant_by_threshold(importance: float, performance: float) -> str:
-    if importance >= THRESH_IMPORTANCE and performance >= THRESH_PERFORMANCE:
-        return "Q1"
-    if importance < THRESH_IMPORTANCE and performance >= THRESH_PERFORMANCE:
-        return "Q2"
-    if importance < THRESH_IMPORTANCE and performance < THRESH_PERFORMANCE:
-        return "Q3"
-    return "Q4"
+OFFSETS = {
+    1: (0.0018, 0.0040),
+    2: (-0.0330, 0.0030),
+    3: (-0.0180, -0.0100),
+    4: (0.0100, 0.0008),
+    5: (-0.0240, 0.0002),
+    6: (0.0020, 0.0035),
+    7: (0.0020, 0.0035),
+    8: (0.0018, 0.0030),
+    9: (0.0020, 0.0033),
+    10: (0.0018, -0.0012),
+}
 
 
-def draw_scatter(path: Path, dpi: int = 320) -> None:
-    x_min, x_max = 3.66, 3.86
-    y_min, y_max = 3.60, 3.78
+COLORS = {
+    "Q1_优势区": "#2e7d32",
+    "Q2_维持区": "#1565c0",
+    "Q3_机会区": "#616161",
+    "Q4_改进区": "#c62828",
+}
+
+
+def load_points(csv_path: Path) -> list[Point]:
+    rows = list(csv.DictReader(csv_path.open("r", encoding="utf-8-sig")))
+    points: list[Point] = []
+    for r in rows:
+        points.append(
+            Point(
+                item_no=int(r["item_no"]),
+                item_text=str(r["item_text"]).strip(),
+                importance=float(r["importance_mean"]),
+                satisfaction=float(r["performance_mean"]),
+                quadrant_from_csv=str(r.get("quadrant", "")).strip(),
+            )
+        )
+    return points
+
+
+def mean_threshold(points: list[Point]) -> tuple[float, float]:
+    imp = sum(p.importance for p in points) / len(points)
+    sat = sum(p.satisfaction for p in points) / len(points)
+    return imp, sat
+
+
+def classify(importance: float, satisfaction: float, imp_th: float, sat_th: float) -> str:
+    if importance >= imp_th and satisfaction >= sat_th:
+        return "Q1_优势区"
+    if importance < imp_th and satisfaction >= sat_th:
+        return "Q2_维持区"
+    if importance < imp_th and satisfaction < sat_th:
+        return "Q3_机会区"
+    return "Q4_改进区"
+
+
+def draw_scatter(points: list[Point], imp_th: float, sat_th: float, output: Path, dpi: int = 320) -> None:
+    x_values = [p.importance for p in points]
+    y_values = [p.satisfaction for p in points]
+    x_min = min(x_values) - 0.03
+    x_max = max(x_values) + 0.03
+    y_min = min(y_values) - 0.03
+    y_max = max(y_values) + 0.03
 
     fig, ax = plt.subplots(figsize=(8.4, 6.4))
-    ax.add_patch(
-        Rectangle(
-            (x_min, THRESH_PERFORMANCE),
-            THRESH_IMPORTANCE - x_min,
-            y_max - THRESH_PERFORMANCE,
-            facecolor="#fbe7e8",
-            alpha=0.45,
-            zorder=0,
-        )
-    )
-    ax.add_patch(
-        Rectangle(
-            (THRESH_IMPORTANCE, THRESH_PERFORMANCE),
-            x_max - THRESH_IMPORTANCE,
-            y_max - THRESH_PERFORMANCE,
-            facecolor="#e6f4ea",
-            alpha=0.45,
-            zorder=0,
-        )
-    )
-    ax.add_patch(
-        Rectangle(
-            (x_min, y_min),
-            THRESH_IMPORTANCE - x_min,
-            THRESH_PERFORMANCE - y_min,
-            facecolor="#edf0f2",
-            alpha=0.60,
-            zorder=0,
-        )
-    )
-    ax.add_patch(
-        Rectangle(
-            (THRESH_IMPORTANCE, y_min),
-            x_max - THRESH_IMPORTANCE,
-            THRESH_PERFORMANCE - y_min,
-            facecolor="#fff2df",
-            alpha=0.55,
-            zorder=0,
-        )
-    )
+    ax.add_patch(Rectangle((x_min, sat_th), imp_th - x_min, y_max - sat_th, facecolor="#fbe7e8", alpha=0.45, zorder=0))
+    ax.add_patch(Rectangle((imp_th, sat_th), x_max - imp_th, y_max - sat_th, facecolor="#e6f4ea", alpha=0.45, zorder=0))
+    ax.add_patch(Rectangle((x_min, y_min), imp_th - x_min, sat_th - y_min, facecolor="#edf0f2", alpha=0.60, zorder=0))
+    ax.add_patch(Rectangle((imp_th, y_min), x_max - imp_th, sat_th - y_min, facecolor="#fff2df", alpha=0.55, zorder=0))
 
-    ax.axvline(THRESH_IMPORTANCE, color="#555555", linestyle="--", linewidth=1.2, zorder=1)
-    ax.axhline(THRESH_PERFORMANCE, color="#555555", linestyle="--", linewidth=1.2, zorder=1)
+    ax.axvline(imp_th, color="#555555", linestyle="--", linewidth=1.2, zorder=1)
+    ax.axhline(sat_th, color="#555555", linestyle="--", linewidth=1.2, zorder=1)
 
-    point_colors = {"Q1": "#2e7d32", "Q2": "#c62828", "Q3": "#616161", "Q4": "#ef6c00"}
-    offsets = {
-        "①": (0.0018, 0.0038),
-        "②": (-0.035, 0.0030),
-        "③": (-0.018, -0.010),
-        "④": (0.0020, -0.010),
-        "⑤": (-0.030, -0.004),
-        "⑥": (0.0020, 0.004),
-        "⑦": (0.0020, 0.004),
-        "⑧": (0.0025, -0.010),
-        "⑨": (0.0020, 0.004),
-        "⑩": (0.0020, -0.010),
-    }
-
-    for p in POINTS:
-        quad = quadrant_by_threshold(p.importance, p.performance)
-        color = point_colors[quad]
-        ax.scatter(p.importance, p.performance, s=68, color=color, edgecolor="white", linewidth=0.8, zorder=3)
-        dx, dy = offsets[p.idx]
+    for p in points:
+        quadrant = classify(p.importance, p.satisfaction, imp_th, sat_th)
+        color = COLORS[quadrant]
+        ax.scatter(p.importance, p.satisfaction, s=68, color=color, edgecolor="white", linewidth=0.8, zorder=3)
+        dx, dy = OFFSETS.get(p.item_no, (0.002, 0.003))
+        label = SHORT_LABELS.get(p.item_no, p.item_text)
         ax.text(
             p.importance + dx,
-            p.performance + dy,
-            f"{p.idx} {p.name}",
+            p.satisfaction + dy,
+            f"{p.item_no} {label}",
             fontsize=8.3,
             color=color,
             weight="bold",
             zorder=4,
         )
 
-    ax.text(3.668, 3.773, "Q2 优先改进区", fontsize=10, color="#8b1e1e", va="top")
-    ax.text(3.857, 3.773, "Q1 保持优势区", fontsize=10, color="#1b5e20", va="top", ha="right")
-    ax.text(3.668, 3.603, "Q3 低优先级区", fontsize=10, color="#37474f", va="bottom")
-    ax.text(3.857, 3.603, "Q4 过度投入区", fontsize=10, color="#ad5200", va="bottom", ha="right")
+    ax.text(x_min + 0.008, y_max - 0.007, "Q2 维持区", fontsize=10.8, color="#0d47a1", va="top")
+    ax.text(x_max - 0.008, y_max - 0.007, "Q1 优势区", fontsize=10.8, color="#1b5e20", va="top", ha="right")
+    ax.text(x_min + 0.008, y_min + 0.003, "Q3 机会区", fontsize=10.8, color="#37474f", va="bottom")
+    ax.text(x_max - 0.008, y_min + 0.003, "Q4 改进区", fontsize=10.8, color="#8b1e1e", va="bottom", ha="right")
 
     ax.text(
-        3.662,
-        THRESH_PERFORMANCE + 0.001,
-        f"表现度均值线 = {THRESH_PERFORMANCE:.4f}",
-        fontsize=8.6,
+        x_min + 0.002,
+        sat_th + 0.001,
+        f"满意度均值线 = {sat_th:.4f}",
+        fontsize=8.8,
         color="#424242",
         va="bottom",
     )
     ax.text(
-        THRESH_IMPORTANCE + 0.001,
-        3.601,
-        f"重要度均值线 = {THRESH_IMPORTANCE:.4f}",
-        fontsize=8.6,
+        imp_th + 0.001,
+        y_min + 0.001,
+        f"重要度均值线 = {imp_th:.4f}",
+        fontsize=8.8,
         color="#424242",
         va="bottom",
     )
@@ -159,49 +155,47 @@ def draw_scatter(path: Path, dpi: int = 320) -> None:
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_min, y_max)
     ax.set_xlabel("重要度评分")
-    ax.set_ylabel("表现度评分")
+    ax.set_ylabel("满意度评分")
     ax.grid(alpha=0.2, linestyle=":")
     fig.tight_layout()
-    fig.savefig(path, dpi=dpi, facecolor="white")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output, dpi=dpi, facecolor="white")
     plt.close(fig)
 
 
-def draw_bar(path: Path, dpi: int = 320) -> None:
-    labels = [p.idx for p in POINTS]
-    short_names = [
-        "中医药文化/非遗",
-        "环境舒适/卫生",
-        "交通便捷/停车",
-        "亲友推荐/口碑",
-        "特色美食/文创",
-        "体质辨识/养生",
-        "服务专业/态度",
-        "价格/优惠",
-        "中医药服务专业",
-        "线上线下宣传",
-    ]
-    importance = [p.importance for p in POINTS]
-    performance = [p.performance for p in POINTS]
+def draw_bar(points: list[Point], imp_th: float, sat_th: float, output: Path, dpi: int = 320) -> None:
+    points = sorted(points, key=lambda p: p.item_no)
+    x = list(range(len(points)))
+    importance = [p.importance for p in points]
+    satisfaction = [p.satisfaction for p in points]
+    labels = [str(p.item_no) for p in points]
+    short_names = [SHORT_LABELS.get(p.item_no, p.item_text) for p in points]
+    tick_labels = [f"{idx} {name}" for idx, name in zip(labels, short_names)]
 
-    x = list(range(len(labels)))
     width = 0.37
+    y_min = min(min(importance), min(satisfaction)) - 0.04
+    y_max = max(max(importance), max(satisfaction)) + 0.04
 
-    fig, ax = plt.subplots(figsize=(9.8, 6.4))
+    fig, ax = plt.subplots(figsize=(11.8, 6.6))
     ax.bar([i - width / 2 for i in x], importance, width=width, color="#3b82f6", label="重要度均值")
-    ax.bar([i + width / 2 for i in x], performance, width=width, color="#f59e0b", label="表现度均值")
+    ax.bar([i + width / 2 for i in x], satisfaction, width=width, color="#f59e0b", label="满意度均值")
 
-    ax.axhline(THRESH_IMPORTANCE, color="#1d4ed8", linestyle="--", linewidth=1.0, label=f"重要度基准 {THRESH_IMPORTANCE:.4f}")
-    ax.axhline(THRESH_PERFORMANCE, color="#b45309", linestyle="--", linewidth=1.0, label=f"表现度基准 {THRESH_PERFORMANCE:.4f}")
+    ax.axhline(imp_th, color="#1d4ed8", linestyle="--", linewidth=1.0, label=f"重要度基准 {imp_th:.4f}")
+    ax.axhline(sat_th, color="#b45309", linestyle="--", linewidth=1.0, label=f"满意度基准 {sat_th:.4f}")
 
     ax.set_xticks(x)
-    ax.set_xticklabels([f"{idx}\n{name}" for idx, name in zip(labels, short_names)], fontsize=8.5)
-    ax.set_ylim(3.55, 3.88)
+    ax.set_xticklabels(tick_labels, fontsize=8.1, rotation=28, ha="right", rotation_mode="anchor")
+    ax.tick_params(axis="x", pad=6)
+    ax.margins(x=0.01)
+    ax.set_ylim(y_min, y_max)
     ax.set_ylabel("均值分数")
     ax.legend(loc="upper left", fontsize=9)
     ax.grid(axis="y", alpha=0.25, linestyle=":")
 
     fig.tight_layout()
-    fig.savefig(path, dpi=dpi, facecolor="white")
+    fig.subplots_adjust(bottom=0.27)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output, dpi=dpi, facecolor="white")
     plt.close(fig)
 
 
@@ -222,7 +216,7 @@ def draw_flow(path: Path, dpi: int = 320) -> None:
         (0.77, 0.45, 0.20, 0.30, "#dcfce7", "P4（后续）", "团购套票/折扣券绑定促销", "0-2个月"),
     ]
 
-    for x, y, w, h, color, p, action, month in nodes:
+    for x, y, w, h, color, priority, action, month in nodes:
         box = FancyBboxPatch(
             (x, y),
             w,
@@ -234,7 +228,7 @@ def draw_flow(path: Path, dpi: int = 320) -> None:
             zorder=2,
         )
         ax.add_patch(box)
-        ax.text(x + 0.02, y + h - 0.07, p, fontsize=10, weight="bold", color="#0f172a")
+        ax.text(x + 0.02, y + h - 0.07, priority, fontsize=10, weight="bold", color="#0f172a")
         ax.text(x + 0.02, y + h - 0.15, action, fontsize=9.3, color="#0f172a")
         ax.text(x + 0.02, y + 0.05, f"时间节点：{month}", fontsize=9, color="#334155")
 
@@ -258,6 +252,7 @@ def draw_flow(path: Path, dpi: int = 320) -> None:
     )
 
     fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=dpi, facecolor="white")
     plt.close(fig)
 
@@ -266,47 +261,62 @@ def to_win_path(path: Path) -> str:
     return str(path).replace("/", "\\")
 
 
-def write_audit(audit_path: Path, outputs: dict[str, Path]) -> None:
-    audit = {
+def write_audit(
+    audit_path: Path,
+    source_csv: Path,
+    points: list[Point],
+    imp_th: float,
+    sat_th: float,
+    outputs: dict[str, Path],
+) -> None:
+    payload = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "input_spec": to_win_path(Path("C:/Users/TSOU/Desktop/docx/IPA/图片需求.txt")),
+        "source_csv": to_win_path(source_csv),
         "output_dir": to_win_path(audit_path.parent),
         "thresholds": {
-            "importance_mean_line": THRESH_IMPORTANCE,
-            "performance_mean_line": THRESH_PERFORMANCE,
+            "importance_mean_line": imp_th,
+            "satisfaction_mean_line": sat_th,
         },
-        "point_count": len(POINTS),
+        "point_count": len(points),
         "points": [
             {
-                "idx": p.idx,
-                "name": p.name,
+                "item_no": p.item_no,
+                "item_text": p.item_text,
                 "importance": p.importance,
-                "performance": p.performance,
-                "reference_quadrant": p.reference_quadrant,
-                "computed_quadrant": quadrant_by_threshold(p.importance, p.performance),
+                "satisfaction": p.satisfaction,
+                "quadrant_from_csv": p.quadrant_from_csv,
+                "quadrant_recomputed": classify(p.importance, p.satisfaction, imp_th, sat_th),
             }
-            for p in POINTS
+            for p in points
         ],
         "outputs": {k: to_win_path(v) for k, v in outputs.items()},
     }
-    audit_path.write_text(json.dumps(audit, ensure_ascii=False, indent=2), encoding="utf-8")
+    audit_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def main() -> None:
+    source_csv = Path("data/data_analysis/_source_analysis/tables/IPA结果表.csv")
     out_dir = Path("data/figure/IPA")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     out_scatter = out_dir / "图7-1_IPA四象限散点图.png"
     out_bar = out_dir / "图7-2_各文旅属性重要度与表现度均值对比.png"
     out_flow = out_dir / "图7-3_IPA整改行动优先级流程示意图.png"
+    out_audit = out_dir / "IPA_图片生成_audit.json"
 
-    draw_scatter(out_scatter)
-    draw_bar(out_bar)
-    draw_flow(out_flow)
+    points = load_points(source_csv)
+    imp_th, sat_th = mean_threshold(points)
 
+    draw_scatter(points, imp_th, sat_th, out_scatter, dpi=320)
+    draw_bar(points, imp_th, sat_th, out_bar, dpi=320)
+    draw_flow(out_flow, dpi=320)
     write_audit(
-        out_dir / "IPA_图片生成_audit.json",
-        {
+        out_audit,
+        source_csv=source_csv,
+        points=points,
+        imp_th=imp_th,
+        sat_th=sat_th,
+        outputs={
             "fig1_scatter": out_scatter,
             "fig2_bar": out_bar,
             "fig3_flow": out_flow,

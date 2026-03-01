@@ -169,13 +169,13 @@ def top_multi(rows: list[dict[str, str]], col_min: int, col_max: int, n: int) ->
 
 def quadrant_meta(q: str) -> tuple[str, str]:
     if q.startswith("Q1"):
-        return ("高重要·高表现", "维持现有水平，防止退化")
+        return ("高重要·高满意", "优势区：继续保持并强化")
     if q.startswith("Q2"):
-        return ("高重要·低表现", "立即整改，重点资源投入")
+        return ("低重要·高满意", "维持区：保持现有水平，防止退化")
     if q.startswith("Q3"):
-        return ("低重要·低表现", "按需投入，不宜过度资源")
+        return ("低重要·低满意", "机会区：适当关注并择机改进")
     if q.startswith("Q4"):
-        return ("低重要·高表现", "适度削减，资源转移至Q2")
+        return ("高重要·低满意", "改进区：优先整改，集中资源投入")
     return ("未知", "待补")
 
 
@@ -482,7 +482,7 @@ def main() -> None:
         q = str(r.get("quadrant", "")).strip()
         qmap.setdefault(q, []).append(r)
     t76_rows = []
-    for q in ["Q2_优先改进", "Q1_保持优势", "Q3_低优先级", "Q4_可能过度投入"]:
+    for q in ["Q1_优势区", "Q2_维持区", "Q3_机会区", "Q4_改进区"]:
         rs = qmap.get(q, [])
         meaning, mgmt = quadrant_meta(q)
         if rs:
@@ -528,7 +528,7 @@ def main() -> None:
 
     t78 = t_out / "表7-8_游客意见三维汇总.csv"
     write_csv(t78, ["意见维度", "核心问题", "数据支撑", "对应分析节点"], [
-        {"意见维度": "体验端短板", "核心问题": "配套设施不完善、指示标识不清晰、价格品质感知落差", "数据支撑": top_text(pain), "对应分析节点": "6.1痛点 + IPA Q2象限"},
+        {"意见维度": "体验端短板", "核心问题": "配套设施不完善、指示标识不清晰、价格品质感知落差", "数据支撑": top_text(pain), "对应分析节点": "6.1痛点 + IPA Q4象限"},
         {"意见维度": "认知端壁垒", "核心问题": "认为街区缺乏吸引力、兴趣不大（未到访群体）", "数据支撑": top_text(block), "对应分析节点": "6.1阻碍 + 6.2 MCA维度1"},
         {"意见维度": "需求端期待", "核心问题": "新增深度体验内容与优惠组合机制", "数据支撑": f"{top_text(proj)}；{top_text(promo)}", "对应分析节点": "7.1聚类矩阵 + 7.3 IPA行动清单"},
     ])
@@ -537,10 +537,10 @@ def main() -> None:
     expert_notes_for_710 = ["待补", "待补", "待补", "待补"]
     expert_status_710 = "专家意见待补"
     if args.expert_policy == "proxy_benchmark":
-        q2_priority = [r for r in ipa_sens if str(r.get("is_priority", "")).strip() == "1"]
-        if not q2_priority:
-            q2_priority = [r for r in ipa_sens if str(r.get("quadrant", "")).startswith("Q2")]
-        q2_text = "、".join(str(r.get("item_text", "")).strip() for r in q2_priority[:3]) or "环境与服务体验短板"
+        q4_priority = [r for r in ipa_sens if str(r.get("is_priority", "")).strip() == "1"]
+        if not q4_priority:
+            q4_priority = [r for r in ipa_sens if str(r.get("quadrant", "")).startswith("Q4")]
+        q4_text = "、".join(str(r.get("item_text", "")).strip() for r in q4_priority[:3]) or "环境与服务体验短板"
 
         sem_signal = []
         for r in sem_75_rows:
@@ -568,7 +568,7 @@ def main() -> None:
             },
             {
                 "访谈维度": "核心判断",
-                "内容框架": f"当前高质量发展首要约束为：{q2_text}，应优先进入季度整改闭环。",
+                "内容框架": f"当前高质量发展首要约束为：{q4_text}，应优先进入季度整改闭环。",
                 "与定量结果的关联": "对应IPA优先项 + 游客问题证据",
                 "状态": "ready_proxy",
                 "备注": "标杆代理口径（非真实访谈）",
@@ -622,7 +622,7 @@ def main() -> None:
         t79 = t_out / "表7-9_专家意见整合框架_待补.csv"
         write_csv(t79, ["访谈维度", "内容框架", "与定量结果的关联", "状态", "备注"], [
             {"访谈维度": "专家背景", "内容框架": "受访专家：___（机构/职称）；访谈时间：___；形式：半结构化深度访谈", "与定量结果的关联": "—", "状态": "pending", "备注": "待访谈资料"},
-            {"访谈维度": "核心判断", "内容框架": "专家指出___是关键约束。", "与定量结果的关联": "对应IPA Q2或MCA/Logit结论", "状态": "pending", "备注": "待访谈资料"},
+            {"访谈维度": "核心判断", "内容框架": "专家指出___是关键约束。", "与定量结果的关联": "对应IPA Q4或MCA/Logit结论", "状态": "pending", "备注": "待访谈资料"},
             {"访谈维度": "机制解释", "内容框架": "专家从___角度解释___机制。", "与定量结果的关联": "与统计模型形成印证/补充", "状态": "pending", "备注": "待访谈资料"},
             {"访谈维度": "政策建议", "内容框架": "专家建议优先推进：①__；②__；③__。", "与定量结果的关联": "与行动矩阵对照共识与差异", "状态": "pending", "备注": "待访谈资料"},
         ])
@@ -630,7 +630,7 @@ def main() -> None:
 
     t710 = t_out / "表7-10_问题证据建议闭环汇总.csv"
     write_csv(t710, ["核心问题", "统计证据", "游客声音", "专家意见", "建议方向", "状态"], [
-        {"核心问题": "环境舒适度不足", "统计证据": "IPA：②环境舒适度与卫生状况表现度低于重要度", "游客声音": top_text(pain[:1]), "专家意见": expert_notes_for_710[0], "建议方向": "优先整改，纳入季度KPI", "状态": expert_status_710},
+        {"核心问题": "环境舒适度不足", "统计证据": "IPA：②环境舒适度与卫生状况满意度低于重要度", "游客声音": top_text(pain[:1]), "专家意见": expert_notes_for_710[0], "建议方向": "优先整改，纳入季度KPI", "状态": expert_status_710},
         {"核心问题": "低认知客群转化不足", "统计证据": "MCA：维度1负端集中低认知群体", "游客声音": top_text(block[:1]), "专家意见": expert_notes_for_710[1], "建议方向": "低门槛内容营销 + 首访激励设计", "状态": expert_status_710},
         {"核心问题": "深度体验供给不足", "统计证据": "聚类：文化深度体验型动机更丰富", "游客声音": top_text(proj[:1]), "专家意见": expert_notes_for_710[2], "建议方向": "试点3类深度体验产品", "状态": expert_status_710},
         {"核心问题": "促销机制单一", "统计证据": "聚类：价格优惠敏感型促销偏好更高", "游客声音": top_text(promo[:1]), "专家意见": expert_notes_for_710[3], "建议方向": "分层定向促销替代均一促销", "状态": expert_status_710},

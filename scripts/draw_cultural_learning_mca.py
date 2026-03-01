@@ -12,7 +12,6 @@ import matplotlib
 import matplotlib.patheffects as pe
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.lines import Line2D
 from matplotlib.patches import Ellipse
 
 from qp_io import numeric_matrix, read_xlsx_first_sheet, write_dict_csv
@@ -330,15 +329,7 @@ def plot_figure(points: list[dict], dim1_pct: float, dim2_pct: float, out_path: 
     draw_cluster(ax, points, CLUSTER_B_KEYS, "#2E7D32")
     draw_cluster(ax, points, CLUSTER_C_KEYS, "#2E7D32")
 
-    handles = [
-        Line2D([0], [0], marker="^", color="w", markerfacecolor=GROUP_COLOR["年龄层"], markeredgecolor="#2E3A2E", markersize=8, label="年龄"),
-        Line2D([0], [0], marker="^", color="w", markerfacecolor=GROUP_COLOR["教育层"], markeredgecolor="#2E3A2E", markersize=8, label="学历"),
-        Line2D([0], [0], marker="^", color="w", markerfacecolor=GROUP_COLOR["学习准备"], markeredgecolor="#2E3A2E", markersize=8, label="学习准备模式"),
-    ]
-    ax.legend(handles=handles, loc="lower right", fontsize=8, frameon=True, facecolor="#F8FCF8", edgecolor="#AFC3AF")
-
     ax.margins(x=0.20, y=0.20)
-    ax.set_title("图47 文化学习准备多重对应分析图", fontsize=12)
     ax.set_xlabel(f"第一维度（Dim 1, {dim1_pct:.2f}%）", fontsize=10)
     ax.set_ylabel(f"第二维度（Dim 2, {dim2_pct:.2f}%）", fontsize=10)
 

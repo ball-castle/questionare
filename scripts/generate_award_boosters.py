@@ -584,14 +584,14 @@ def make_ipa_sensitivity(data):
     rows = []
     for method, imp_th, perf_th in methods:
         for item_no, imp, perf in items:
-            if imp >= imp_th and perf < perf_th:
-                quad = "Q2_优先改进"
-            elif imp >= imp_th and perf >= perf_th:
-                quad = "Q1_保持优势"
+            if imp >= imp_th and perf >= perf_th:
+                quad = "Q1_优势区"
+            elif imp < imp_th and perf >= perf_th:
+                quad = "Q2_维持区"
             elif imp < imp_th and perf < perf_th:
-                quad = "Q3_低优先级"
+                quad = "Q3_机会区"
             else:
-                quad = "Q4_可能过度投入"
+                quad = "Q4_改进区"
             col_idx = 66 + item_no - 1
             rows.append(
                 {
@@ -603,7 +603,7 @@ def make_ipa_sensitivity(data):
                     "importance_threshold": imp_th,
                     "performance_threshold": perf_th,
                     "quadrant": quad,
-                    "is_priority": 1 if quad == "Q2_优先改进" else 0,
+                    "is_priority": 1 if quad == "Q4_改进区" else 0,
                 }
             )
     write_csv(
@@ -699,10 +699,10 @@ def make_hypothesis_model_mapping():
         },
         {
             "假设编号": "H7",
-            "研究假设": "高重要度低表现条目构成优先改进区",
+            "研究假设": "高重要度低满意条目构成优先改进区",
             "变量": "Q66-75 vs Q76-85",
             "模型": "IPA",
-            "预期方向": "存在Q2条目",
+            "预期方向": "存在Q4条目",
             "证据": "见IPA结果表与阈值敏感性表",
             "结论": f"成立（当前识别{ipa_priority_n}项优先改进）",
         },

@@ -168,17 +168,7 @@ def main() -> None:
     ax.set_ylabel("第二维度", fontsize=22)
     ax.tick_params(axis="both", labelsize=15, colors="#444444")
 
-    fig.text(
-        0.5,
-        0.016,
-        "图 48   知识付费意愿多重对应分析图",
-        ha="center",
-        va="bottom",
-        fontsize=30,
-        fontweight="bold",
-        color="#111111",
-    )
-    fig.tight_layout(rect=[0.04, 0.07, 0.98, 0.98])
+    fig.tight_layout(rect=[0.04, 0.04, 0.98, 0.98])
     fig.savefig(out_path, dpi=int(args.dpi))
     plt.close(fig)
 

@@ -58,10 +58,10 @@ OFFSETS = {
 
 
 COLORS = {
-    "Q1_保持优势": "#2e7d32",
-    "Q2_优先改进": "#c62828",
-    "Q3_低优先级": "#616161",
-    "Q4_可能过度投入": "#ef6c00",
+    "Q1_优势区": "#2e7d32",
+    "Q2_维持区": "#1565c0",
+    "Q3_机会区": "#616161",
+    "Q4_改进区": "#c62828",
 }
 
 
@@ -89,12 +89,12 @@ def mean_threshold(points: list[Point]) -> tuple[float, float]:
 
 def classify(importance: float, performance: float, imp_th: float, perf_th: float) -> str:
     if importance >= imp_th and performance >= perf_th:
-        return "Q1_保持优势"
-    if importance >= imp_th and performance < perf_th:
-        return "Q2_优先改进"
+        return "Q1_优势区"
+    if importance < imp_th and performance >= perf_th:
+        return "Q2_维持区"
     if importance < imp_th and performance < perf_th:
-        return "Q3_低优先级"
-    return "Q4_可能过度投入"
+        return "Q3_机会区"
+    return "Q4_改进区"
 
 
 def draw_scatter(points: list[Point], imp_th: float, perf_th: float, out_png: Path, dpi: int = 320) -> None:
@@ -130,15 +130,15 @@ def draw_scatter(points: list[Point], imp_th: float, perf_th: float, out_png: Pa
             zorder=4,
         )
 
-    ax.text(x_min + 0.008, y_max - 0.007, "Q4 可能过度投入区", fontsize=11, color="#ad5200", va="top")
-    ax.text(x_max - 0.008, y_max - 0.007, "Q1 保持优势区", fontsize=11, color="#1b5e20", va="top", ha="right")
-    ax.text(x_min + 0.008, y_min + 0.003, "Q3 低优先级区", fontsize=11, color="#37474f", va="bottom")
-    ax.text(x_max - 0.008, y_min + 0.003, "Q2 优先改进区", fontsize=11, color="#8b1e1e", va="bottom", ha="right")
+    ax.text(x_min + 0.008, y_max - 0.007, "Q2 维持区", fontsize=11, color="#0d47a1", va="top")
+    ax.text(x_max - 0.008, y_max - 0.007, "Q1 优势区", fontsize=11, color="#1b5e20", va="top", ha="right")
+    ax.text(x_min + 0.008, y_min + 0.003, "Q3 机会区", fontsize=11, color="#37474f", va="bottom")
+    ax.text(x_max - 0.008, y_min + 0.003, "Q4 改进区", fontsize=11, color="#8b1e1e", va="bottom", ha="right")
 
     ax.text(
         x_min + 0.002,
         perf_th + 0.001,
-        f"表现度均值线 = {perf_th:.4f}",
+        f"满意度均值线 = {perf_th:.4f}",
         fontsize=9,
         color="#424242",
         va="bottom",
@@ -155,7 +155,7 @@ def draw_scatter(points: list[Point], imp_th: float, perf_th: float, out_png: Pa
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_min, y_max)
     ax.set_xlabel("重要度评分")
-    ax.set_ylabel("表现度评分")
+    ax.set_ylabel("满意度评分")
     ax.grid(alpha=0.2, linestyle=":")
     fig.tight_layout()
     out_png.parent.mkdir(parents=True, exist_ok=True)
@@ -170,26 +170,30 @@ def draw_bar(points: list[Point], imp_th: float, perf_th: float, out_png: Path, 
     performance = [p.performance for p in points]
     labels = [f"{p.item_no}" for p in points]
     short_names = [SHORT_LABELS.get(p.item_no, p.item_text) for p in points]
+    tick_labels = [f"{idx} {name}" for idx, name in zip(labels, short_names)]
 
     width = 0.37
     y_min = min(min(importance), min(performance)) - 0.04
     y_max = max(max(importance), max(performance)) + 0.04
 
-    fig, ax = plt.subplots(figsize=(10.0, 6.4))
+    fig, ax = plt.subplots(figsize=(11.8, 6.6))
     ax.bar([i - width / 2 for i in x], importance, width=width, color="#3b82f6", label="重要度均值")
-    ax.bar([i + width / 2 for i in x], performance, width=width, color="#f59e0b", label="表现度均值")
+    ax.bar([i + width / 2 for i in x], performance, width=width, color="#f59e0b", label="满意度均值")
 
     ax.axhline(imp_th, color="#1d4ed8", linestyle="--", linewidth=1.1, label=f"重要度基准 {imp_th:.4f}")
-    ax.axhline(perf_th, color="#b45309", linestyle="--", linewidth=1.1, label=f"表现度基准 {perf_th:.4f}")
+    ax.axhline(perf_th, color="#b45309", linestyle="--", linewidth=1.1, label=f"满意度基准 {perf_th:.4f}")
 
     ax.set_xticks(x)
-    ax.set_xticklabels([f"{idx}\n{name}" for idx, name in zip(labels, short_names)], fontsize=8.5)
+    ax.set_xticklabels(tick_labels, fontsize=8.1, rotation=28, ha="right", rotation_mode="anchor")
+    ax.tick_params(axis="x", pad=6)
+    ax.margins(x=0.01)
     ax.set_ylim(y_min, y_max)
     ax.set_ylabel("均值分数")
     ax.grid(axis="y", alpha=0.25, linestyle=":")
     ax.legend(loc="upper left")
 
     fig.tight_layout()
+    fig.subplots_adjust(bottom=0.27)
     out_png.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_png, dpi=dpi, facecolor="white")
     plt.close(fig)
