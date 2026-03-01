@@ -352,7 +352,6 @@ def draw_persona_figure(features: pd.DataFrame, summary: pd.DataFrame, out_path:
     cid_col = "Cluster_ID" if "Cluster_ID" in cols else find_col(cols, ["Cluster", "ID"])
     sid_col = "聚类编号" if "聚类编号" in summary.columns else find_col(summary.columns.tolist(), ["聚类", "编号"])
     sname_col = "聚类名称" if "聚类名称" in summary.columns else find_col(summary.columns.tolist(), ["聚类", "名称"])
-    sn_col = "样本量" if "样本量" in summary.columns else find_col(summary.columns.tolist(), ["样本量"])
     sshare_col = "占比(%)" if "占比(%)" in summary.columns else find_col(summary.columns.tolist(), ["占比"])
 
     age_col = find_col(cols, ["年龄_编码"])
@@ -392,9 +391,17 @@ def draw_persona_figure(features: pd.DataFrame, summary: pd.DataFrame, out_path:
     meta[sid_col] = to_numeric(meta[sid_col]).astype(int)
     meta = meta.sort_values(sid_col)
 
-    fig, axes = plt.subplots(1, meta.shape[0], figsize=(24, 10))
-    if meta.shape[0] == 1:
-        axes = [axes]
+    card_count = int(meta.shape[0])
+    col_count = 1 if card_count == 1 else 2
+    row_count = int(np.ceil(card_count / col_count))
+    fig_width = 9.6 if col_count == 1 else 13.2
+    fig_height = 6.2 * row_count
+    fig, axes = plt.subplots(row_count, col_count, figsize=(fig_width, fig_height))
+    fig.patch.set_facecolor("white")
+    if isinstance(axes, np.ndarray):
+        axes_flat = axes.reshape(-1)
+    else:
+        axes_flat = np.array([axes])
 
     card_colors = {
         1: "#2FAE62",
@@ -403,10 +410,9 @@ def draw_persona_figure(features: pd.DataFrame, summary: pd.DataFrame, out_path:
         4: "#8E44AD",
     }
 
-    for ax, (_, row) in zip(axes, meta.iterrows()):
+    for ax, (_, row) in zip(axes_flat, meta.iterrows()):
         cid = int(row[sid_col])
         cname = str(row[sname_col])
-        n = int(row[sn_col])
         share = float(row[sshare_col])
         c = card_colors.get(cid, "#607D8B")
         subset = features[to_numeric(features[cid_col]) == cid].copy()
@@ -433,52 +439,69 @@ def draw_persona_figure(features: pd.DataFrame, summary: pd.DataFrame, out_path:
         tags = [guess_preference_label(x[0]) for x in pref_scores[:4]]
 
         ax.axis("off")
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.set_facecolor("white")
+
+        card_box = FancyBboxPatch(
+            (0.03, 0.03),
+            0.94,
+            0.94,
+            boxstyle="round,pad=0.012,rounding_size=0.02",
+            linewidth=1.2,
+            edgecolor="#D8DEE6",
+            facecolor="#FFFFFF",
+            alpha=1.0,
+        )
+        ax.add_patch(card_box)
 
         top_box = FancyBboxPatch(
-            (0.07, 0.83),
-            0.86,
-            0.14,
+            (0.06, 0.79),
+            0.88,
+            0.16,
             boxstyle="round,pad=0.01,rounding_size=0.02",
             linewidth=0,
             facecolor=c,
             alpha=0.97,
         )
         ax.add_patch(top_box)
-        ax.text(0.50, 0.93, f"第{cid}类", ha="center", va="center", fontsize=18, color="white", weight="bold")
-        ax.text(0.50, 0.885, cname, ha="center", va="center", fontsize=16, color="white", weight="bold")
-        ax.text(0.50, 0.848, f"样本量 {n}  占比 {share:.1f}%", ha="center", va="center", fontsize=11, color="white")
+        ax.text(0.50, 0.90, f"第{cid}类", ha="center", va="center", fontsize=23, color="white", weight="bold")
+        ax.text(0.50, 0.85, cname, ha="center", va="center", fontsize=18, color="white", weight="bold")
+        ax.text(0.50, 0.81, f"占比 {share:.1f}%", ha="center", va="center", fontsize=14, color="white", weight="bold")
 
-        ax.text(0.10, 0.79, f"主要年龄：{age_txt}", fontsize=10, color="#333333")
-        ax.text(0.10, 0.75, f"主要学历：{edu_txt}", fontsize=10, color="#333333")
-        ax.text(0.10, 0.71, f"主要收入：{income_txt}", fontsize=10, color="#333333")
-        ax.text(0.10, 0.67, f"主要职业：{occ_txt}", fontsize=10, color="#333333")
+        ax.text(0.10, 0.72, f"主要年龄：{age_txt}", fontsize=12.5, color="#333333", weight="bold")
+        ax.text(0.56, 0.72, f"主要学历：{edu_txt}", fontsize=12.5, color="#333333", weight="bold")
+        ax.text(0.10, 0.66, f"主要收入：{income_txt}", fontsize=12.5, color="#333333", weight="bold")
+        ax.text(0.56, 0.66, f"主要职业：{occ_txt}", fontsize=12.5, color="#333333", weight="bold")
 
-        ax.text(0.10, 0.63, "高偏好项目：", fontsize=10, color="#555555", weight="bold")
+        ax.text(0.10, 0.59, "高偏好项目", fontsize=13.5, color="#4F5965", weight="bold")
         for i, tag in enumerate(tags):
-            x = 0.10 + (i % 3) * 0.28
-            y = 0.58 - (i // 3) * 0.05
+            x = 0.10 + (i % 2) * 0.43
+            y = 0.52 - (i // 2) * 0.06
             tag_box = FancyBboxPatch(
                 (x, y),
-                0.25,
-                0.036,
-                boxstyle="round,pad=0.01,rounding_size=0.01",
-                linewidth=0.5,
+                0.36,
+                0.047,
+                boxstyle="round,pad=0.01,rounding_size=0.012",
+                linewidth=0.6,
                 edgecolor=c,
                 facecolor=c,
                 alpha=0.20,
             )
             ax.add_patch(tag_box)
-            ax.text(x + 0.125, y + 0.018, tag, ha="center", va="center", fontsize=9, color=c, weight="bold")
+            ax.text(x + 0.18, y + 0.0235, tag, ha="center", va="center", fontsize=11.5, color=c, weight="bold")
 
-        ax.text(0.10, 0.47, "画像概述：", fontsize=10, color="#555555", weight="bold")
-        ax.text(0.10, 0.42, fill(story.get(cid, ""), width=20), fontsize=9, color="#666666", va="top")
+        ax.text(0.10, 0.37, "画像概述", fontsize=13.5, color="#4F5965", weight="bold")
+        ax.text(0.10, 0.325, fill(story.get(cid, ""), width=18), fontsize=11.5, color="#4F5965", va="top")
 
-        ax.text(0.10, 0.20, "运营建议：", fontsize=10, color="#555555", weight="bold")
+        ax.text(0.10, 0.205, "运营建议", fontsize=13.5, color="#4F5965", weight="bold")
         for j, line in enumerate(action.get(cid, [])):
-            ax.text(0.10, 0.16 - 0.045 * j, f"- {line}", fontsize=9, color=c, weight="bold")
+            ax.text(0.10, 0.155 - 0.047 * j, f"- {line}", fontsize=11.5, color=c, weight="bold")
 
-    fig.suptitle("图56  叶开泰文化街区四类受访者画像", fontsize=18, y=0.99, weight="bold")
-    fig.tight_layout()
+    for ax in axes_flat[card_count:]:
+        ax.axis("off")
+
+    fig.tight_layout(pad=0.9, w_pad=1.1, h_pad=1.1)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)
