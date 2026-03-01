@@ -97,7 +97,7 @@ def classify(importance: float, performance: float, imp_th: float, perf_th: floa
     return "Q4_可能过度投入"
 
 
-def draw(points: list[Point], imp_th: float, perf_th: float, out_png: Path, dpi: int = 320) -> None:
+def draw_scatter(points: list[Point], imp_th: float, perf_th: float, out_png: Path, dpi: int = 320) -> None:
     x_values = [p.importance for p in points]
     y_values = [p.performance for p in points]
     x_min = min(x_values) - 0.03
@@ -163,11 +163,53 @@ def draw(points: list[Point], imp_th: float, perf_th: float, out_png: Path, dpi:
     plt.close(fig)
 
 
-def write_audit(points: list[Point], imp_th: float, perf_th: float, out_png: Path, out_json: Path) -> None:
+def draw_bar(points: list[Point], imp_th: float, perf_th: float, out_png: Path, dpi: int = 320) -> None:
+    points = sorted(points, key=lambda p: p.item_no)
+    x = list(range(len(points)))
+    importance = [p.importance for p in points]
+    performance = [p.performance for p in points]
+    labels = [f"{p.item_no}" for p in points]
+    short_names = [SHORT_LABELS.get(p.item_no, p.item_text) for p in points]
+
+    width = 0.37
+    y_min = min(min(importance), min(performance)) - 0.04
+    y_max = max(max(importance), max(performance)) + 0.04
+
+    fig, ax = plt.subplots(figsize=(10.0, 6.4))
+    ax.bar([i - width / 2 for i in x], importance, width=width, color="#3b82f6", label="重要度均值")
+    ax.bar([i + width / 2 for i in x], performance, width=width, color="#f59e0b", label="表现度均值")
+
+    ax.axhline(imp_th, color="#1d4ed8", linestyle="--", linewidth=1.1, label=f"重要度基准 {imp_th:.4f}")
+    ax.axhline(perf_th, color="#b45309", linestyle="--", linewidth=1.1, label=f"表现度基准 {perf_th:.4f}")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"{idx}\n{name}" for idx, name in zip(labels, short_names)], fontsize=8.5)
+    ax.set_ylim(y_min, y_max)
+    ax.set_ylabel("均值分数")
+    ax.grid(axis="y", alpha=0.25, linestyle=":")
+    ax.legend(loc="upper left")
+
+    fig.tight_layout()
+    out_png.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_png, dpi=dpi, facecolor="white")
+    plt.close(fig)
+
+
+def write_audit(
+    points: list[Point],
+    imp_th: float,
+    perf_th: float,
+    out_scatter_png: Path,
+    out_bar_png: Path,
+    out_json: Path,
+) -> None:
     payload = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "source_csv": "data/data_analysis/_source_analysis/tables/IPA结果表.csv",
-        "output_png": str(out_png).replace("/", "\\"),
+        "outputs": {
+            "scatter_png": str(out_scatter_png).replace("/", "\\"),
+            "bar_png": str(out_bar_png).replace("/", "\\"),
+        },
         "thresholds": {
             "importance_mean": imp_th,
             "performance_mean": perf_th,
@@ -190,15 +232,25 @@ def write_audit(points: list[Point], imp_th: float, perf_th: float, out_png: Pat
 def main() -> None:
     src = Path("data/data_analysis/_source_analysis/tables/IPA结果表.csv")
     out_dir = Path("new/ipa")
-    out_png = out_dir / "图7-3_IPA四象限散点图.png"
-    out_json = out_dir / "图7-3_IPA四象限散点图_audit.json"
+    out_scatter_png = out_dir / "图7-3_IPA四象限散点图.png"
+    out_bar_png = out_dir / "图7-2_各文旅属性重要度与表现度均值对比.png"
+    out_json = out_dir / "IPA_当前数据图片生成_audit.json"
 
     points = load_points(src)
     imp_th, perf_th = mean_threshold(points)
-    draw(points, imp_th, perf_th, out_png=out_png, dpi=320)
-    write_audit(points, imp_th, perf_th, out_png=out_png, out_json=out_json)
+    draw_scatter(points, imp_th, perf_th, out_png=out_scatter_png, dpi=320)
+    draw_bar(points, imp_th, perf_th, out_png=out_bar_png, dpi=320)
+    write_audit(
+        points,
+        imp_th,
+        perf_th,
+        out_scatter_png=out_scatter_png,
+        out_bar_png=out_bar_png,
+        out_json=out_json,
+    )
 
-    print(f"done: {out_png}")
+    print(f"done: {out_scatter_png}")
+    print(f"done: {out_bar_png}")
     print(f"audit: {out_json}")
 
 
