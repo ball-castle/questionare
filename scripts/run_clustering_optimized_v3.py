@@ -15,8 +15,8 @@ from qp_io import write_dict_csv, write_rows_csv
 
 
 ROOT = Path(__file__).resolve().parents[1]
-INPUT_CLEAN = ROOT / "output_data_analysis" / "tables" / "survey_clean.csv"
-OUT_DIR = ROOT / "data" / "data_clustering3"
+INPUT_CLEAN = ROOT / "data" / "data_analysis" / "_source_analysis" / "tables" / "survey_clean.csv"
+OUT_DIR = ROOT / "data" / "clustering1"
 
 SEED = 42
 K_CANDIDATES = (2, 3, 4)

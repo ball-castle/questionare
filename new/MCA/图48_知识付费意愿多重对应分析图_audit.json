@@ -1,0 +1,56 @@
+{
+  "output_path": "new/MCA/图48_知识付费意愿多重对应分析图.png",
+  "coordinate_csv_path": "new/MCA/图48_知识付费意愿多重对应分析图_坐标.csv",
+  "point_count": 25,
+  "axis": {
+    "xlim": [
+      -1.85,
+      2.0
+    ],
+    "ylim": [
+      -1.05,
+      1.65
+    ],
+    "xticks": [
+      -1,
+      0,
+      1,
+      2
+    ],
+    "yticks": [
+      -1,
+      0,
+      1
+    ]
+  },
+  "ellipses": [
+    {
+      "xy": [
+        -0.8,
+        -0.43
+      ],
+      "width": 1.48,
+      "height": 1.2,
+      "angle": 0
+    },
+    {
+      "xy": [
+        0.46,
+        0.73
+      ],
+      "width": 1.62,
+      "height": 0.76,
+      "angle": 27
+    },
+    {
+      "xy": [
+        0.63,
+        -0.25
+      ],
+      "width": 1.34,
+      "height": 1.02,
+      "angle": -6
+    }
+  ],
+  "note": "reference-style reconstruction from user-provided Figure 48 screenshot"
+}

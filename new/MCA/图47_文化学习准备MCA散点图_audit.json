@@ -1,0 +1,29 @@
+{
+  "input_xlsx": "data\\叶开泰问卷数据.xlsx",
+  "output_path": "new\\MCA\\图47_文化学习准备MCA散点图.png",
+  "raw_n": 863,
+  "learning_valid_n": 863,
+  "mca_n": 863,
+  "mca_columns": [
+    2,
+    3,
+    109
+  ],
+  "dim1_pct": 9.345049224809367,
+  "dim2_pct": 8.53023726693301,
+  "learning_threshold": 4,
+  "learning_mode_counts": {
+    "不学习": 163,
+    "游览中学习": 19,
+    "游览后学习": 22,
+    "游览中后学习": 100,
+    "游览前中学习": 139,
+    "游览前中后学习": 420
+  },
+  "mode_merge_rule": {
+    "before_only_to": "游览前中学习",
+    "before_after_to": "游览前中后学习",
+    "positive_threshold": ">=4"
+  },
+  "coordinate_csv_path": "new\\MCA\\图47_文化学习准备MCA散点图_坐标.csv"
+}

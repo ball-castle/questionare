@@ -1,0 +1,97 @@
+{
+  "generated_at": "2026-02-28T23:01:32",
+  "input_spec": "C:\\Users\\TSOU\\Desktop\\docx\\IPA\\图片需求.txt",
+  "output_dir": "data\\figure\\IPA",
+  "thresholds": {
+    "importance_mean_line": 3.7672,
+    "performance_mean_line": 3.7061
+  },
+  "point_count": 10,
+  "points": [
+    {
+      "idx": "①",
+      "name": "中医药文化展示与非遗体验",
+      "importance": 3.812,
+      "performance": 3.751,
+      "reference_quadrant": "Q1",
+      "computed_quadrant": "Q1"
+    },
+    {
+      "idx": "②",
+      "name": "环境舒适度与卫生状况",
+      "importance": 3.738,
+      "performance": 3.734,
+      "reference_quadrant": "Q2",
+      "computed_quadrant": "Q2"
+    },
+    {
+      "idx": "③",
+      "name": "交通便捷与停车",
+      "importance": 3.719,
+      "performance": 3.668,
+      "reference_quadrant": "Q3",
+      "computed_quadrant": "Q3"
+    },
+    {
+      "idx": "④",
+      "name": "亲友推荐/口碑",
+      "importance": 3.789,
+      "performance": 3.694,
+      "reference_quadrant": "Q4",
+      "computed_quadrant": "Q4"
+    },
+    {
+      "idx": "⑤",
+      "name": "特色美食与文创",
+      "importance": 3.731,
+      "performance": 3.642,
+      "reference_quadrant": "Q3",
+      "computed_quadrant": "Q3"
+    },
+    {
+      "idx": "⑥",
+      "name": "个性化体质辨识/养生咨询",
+      "importance": 3.805,
+      "performance": 3.744,
+      "reference_quadrant": "Q1",
+      "computed_quadrant": "Q1"
+    },
+    {
+      "idx": "⑦",
+      "name": "服务专业度与态度",
+      "importance": 3.836,
+      "performance": 3.756,
+      "reference_quadrant": "Q1",
+      "computed_quadrant": "Q1"
+    },
+    {
+      "idx": "⑧",
+      "name": "产品价格与优惠",
+      "importance": 3.768,
+      "performance": 3.704,
+      "reference_quadrant": "Q3/Q4",
+      "computed_quadrant": "Q4"
+    },
+    {
+      "idx": "⑨",
+      "name": "中医药服务专业度",
+      "importance": 3.824,
+      "performance": 3.737,
+      "reference_quadrant": "Q1",
+      "computed_quadrant": "Q1"
+    },
+    {
+      "idx": "⑩",
+      "name": "线上线下宣传推广",
+      "importance": 3.781,
+      "performance": 3.683,
+      "reference_quadrant": "Q4",
+      "computed_quadrant": "Q4"
+    }
+  ],
+  "outputs": {
+    "fig1_scatter": "data\\figure\\IPA\\图7-1_IPA四象限散点图.png",
+    "fig2_bar": "data\\figure\\IPA\\图7-2_各文旅属性重要度与表现度均值对比.png",
+    "fig3_flow": "data\\figure\\IPA\\图7-3_IPA整改行动优先级流程示意图.png"
+  }
+}

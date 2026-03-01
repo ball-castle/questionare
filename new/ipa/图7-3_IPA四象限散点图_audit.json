@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-03-01T18:18:14",
+  "source_csv": "data/data_analysis/_source_analysis/tables/IPA结果表.csv",
+  "output_png": "new\\ipa\\图7-3_IPA四象限散点图.png",
+  "thresholds": {
+    "importance_mean": 3.7455284552845525,
+    "performance_mean": 3.6896631823461092
+  },
+  "points": [
+    {
+      "item_no": 1,
+      "item_text": "①丰富的中医药文化展示和非遗体验项目",
+      "importance": 3.7560975609756095,
+      "performance": 3.718931475029036,
+      "quadrant_from_csv": "Q1_保持优势",
+      "quadrant_recomputed": "Q1_保持优势"
+    },
+    {
+      "item_no": 2,
+      "item_text": "②环境舒适度与卫生状况",
+      "importance": 3.7409988385598143,
+      "performance": 3.6666666666666665,
+      "quadrant_from_csv": "Q3_低优先级",
+      "quadrant_recomputed": "Q3_低优先级"
+    },
+    {
+      "item_no": 3,
+      "item_text": "③便捷的交通、充足的停车位",
+      "importance": 3.722415795586527,
+      "performance": 3.6515679442508713,
+      "quadrant_from_csv": "Q3_低优先级",
+      "quadrant_recomputed": "Q3_低优先级"
+    },
+    {
+      "item_no": 4,
+      "item_text": "④亲友推荐/正面评价多",
+      "importance": 3.6887340301974447,
+      "performance": 3.708478513356562,
+      "quadrant_from_csv": "Q4_可能过度投入",
+      "quadrant_recomputed": "Q4_可能过度投入"
+    },
+    {
+      "item_no": 5,
+      "item_text": "⑤特色美食、文创产品的种类及品质",
+      "importance": 3.7398373983739837,
+      "performance": 3.5900116144018583,
+      "quadrant_from_csv": "Q3_低优先级",
+      "quadrant_recomputed": "Q3_低优先级"
+    },
+    {
+      "item_no": 6,
+      "item_text": "⑥提供个性化中医体质辨识、养生咨询等服务",
+      "importance": 3.7642276422764227,
+      "performance": 3.7096399535423927,
+      "quadrant_from_csv": "Q1_保持优势",
+      "quadrant_recomputed": "Q1_保持优势"
+    },
+    {
+      "item_no": 7,
+      "item_text": "⑦服务专业度与态度",
+      "importance": 3.826945412311266,
+      "performance": 3.722415795586527,
+      "quadrant_from_csv": "Q1_保持优势",
+      "quadrant_recomputed": "Q1_保持优势"
+    },
+    {
+      "item_no": 8,
+      "item_text": "⑧产品价格与优惠力度",
+      "importance": 3.7340301974448318,
+      "performance": 3.6933797909407664,
+      "quadrant_from_csv": "Q4_可能过度投入",
+      "quadrant_recomputed": "Q4_可能过度投入"
+    },
+    {
+      "item_no": 9,
+      "item_text": "⑨中医药服务专业度",
+      "importance": 3.7932636469221834,
+      "performance": 3.6957026713124272,
+      "quadrant_from_csv": "Q1_保持优势",
+      "quadrant_recomputed": "Q1_保持优势"
+    },
+    {
+      "item_no": 10,
+      "item_text": "⑩线上线下宣传推广",
+      "importance": 3.6887340301974447,
+      "performance": 3.7398373983739837,
+      "quadrant_from_csv": "Q4_可能过度投入",
+      "quadrant_recomputed": "Q4_可能过度投入"
+    }
+  ]
+}

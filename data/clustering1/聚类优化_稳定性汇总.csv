@@ -1,0 +1,7 @@
+﻿metric,value
+resample_runs,120
+sample_ratio,0.7
+consistency_mean,0.9718076285240465
+consistency_p10,0.8839137645107794
+consistency_p50,0.9867330016583747
+consistency_min,0.845771144278607

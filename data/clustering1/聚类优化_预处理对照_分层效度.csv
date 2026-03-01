@@ -1,0 +1,3 @@
+﻿feature_set,k,zscore_silhouette,robust_silhouette,zscore_stratified_score,robust_stratified_score,zscore_visited_sig_n,robust_visited_sig_n,zscore_unvisited_sig_n,robust_unvisited_sig_n,cluster_consistency_robust_vs_zscore,changed_share_robust_vs_zscore,preferred_preprocess
+enhanced,2,0.23803393754593208,0.3408398673532379,2.562151897197835,3.6740651525630152,2,3,2,2,0.8908246225319396,0.10917537746806039,robust
+enhanced,4,0.15448160907995342,0.25137940908444456,5.2460085174290345,5.245523220524796,4,4,2,2,0.9976771196283392,0.0023228803716608404,zscore
