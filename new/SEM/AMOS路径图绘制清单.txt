@@ -1,0 +1,139 @@
+AMOS路径图绘制清单（可直接照画）
+版本日期：2026-03-03
+适用口径：项目已跑通的新模型 intent_partial_v1（NH1-NH10）
+
+====================
+一、先用哪份数据
+====================
+推荐直接使用：data/SEM/SEM_输入数据_main.csv
+该文件已包含以下建模变量：
+- C052,C053,C054,C055,C056,C057,C058,C059,C060,C061,C062,C063,C065,C086,C087,C088,C089,R_visit,R_recommend
+说明：
+- R_visit = 6 - C090（已反向，分值越高=意愿越高）
+- R_recommend = 6 - C091（已反向，分值越高=意愿越高）
+- C064 为注意力题，不进入SEM测量模型
+
+若你改用原始 C090/C091 直接建模，会导致路径方向与“意愿越高越好”的解释相反（系数符号可能反向）。
+
+====================
+二、潜变量（椭圆）与观测变量（矩形）
+====================
+1) 服务质量（S_service）
+- C052：中医药文化的专业性与体验深度（艾灸、推拿等）
+- C053：非遗项目的独特性与参与感
+- C054：非遗传承人互动体验机会
+- C062：宣传推广的真实性（无夸大宣传）
+- C063：品牌知名度与口碑
+- C065：小红书/抖音等线上宣传种草
+
+2) 活动内容（S_activity）
+- C055：体验特色药膳/药食同源产品
+- C056：产品丰富度与独特性
+- C057：消费价格合理性
+
+3) 环境氛围（S_environment）
+- C058：交通便利性与停车便利
+- C059：环境舒适度与文化氛围
+- C060：配套设施完善度（休息区、卫生间等）
+- C061：周边配套（购物、其他景点联动）
+
+4) 文化认知（O_cognition）
+- C086：对中医药文化兴趣
+- C087：游览前对“中医药+文旅”模式了解程度
+- C088：游览可提升对“中医药+文旅”理解
+- C089：学习中医药相关知识与技艺意愿
+
+5) 行为意愿（R_intent）
+- R_visit（来自 C090 反向）
+- R_recommend（来自 C091 反向）
+
+备注：
+- 你前面提到“C052-C065 全部入模（14题）”，但项目现行SEM口径中 C064 不入模，仅做质控筛选。
+
+====================
+三、结构路径（单向箭头）
+====================
+按 NH1-NH10 画：
+- NH1: S_environment -> O_cognition
+- NH2: S_service -> O_cognition
+- NH3: S_activity -> O_cognition
+- NH4: O_cognition -> R_intent
+- NH5: S_environment -> R_intent
+- NH6: S_service -> R_intent
+- NH7: S_activity -> R_intent
+
+中介解释链（不额外画新节点，只由已有路径构成）：
+- NH8: S_environment -> O_cognition -> R_intent
+- NH9: S_service -> O_cognition -> R_intent
+- NH10: S_activity -> O_cognition -> R_intent
+
+====================
+四、协方差与残差相关（双向箭头）
+====================
+1) 三个外生潜变量之间协方差：
+- S_environment <-> S_service
+- S_environment <-> S_activity
+- S_service <-> S_activity
+
+2) 同维度方法效应残差相关（矩形之间）：
+- C062 <-> C063
+- C063 <-> C065
+- C062 <-> C065
+
+====================
+五、AMOS图形元素必须补全
+====================
+- 每个观测变量（矩形）都加一个误差项（小圆）
+- 内生潜变量 O_cognition、R_intent 都加扰动项（小圆）
+- 外生潜变量（S_environment、S_service、S_activity）不加被解释扰动（默认即可）
+
+====================
+六、识别与估计设置（AMOS）
+====================
+1) 识别（任选其一，常用第一种）：
+- 固定每个潜变量的第1个因子载荷为1
+或
+- 固定潜变量方差为1
+
+2) 估计：
+- Estimation method: Maximum Likelihood (ML)
+- 输出勾选：Standardized estimates、Squared multiple correlations、Fit indices
+
+3) 中介检验（NH8-NH10）：
+- Bootstrap = 2000
+- Bias-corrected 95% CI
+
+====================
+七、建议布局（仿你给的示意图）
+====================
+从左到右三层：
+- 左列：S_environment、S_service、S_activity（竖排）
+- 中列上：O_cognition
+- 右列：R_intent
+
+测量题项摆放：
+- 各潜变量对应题项放在其周围（通常左侧或上下）
+- R_intent 的两个题项（R_visit、R_recommend）放在最右侧
+
+====================
+八、可直接标注到图上的主模型标准化路径系数（可选）
+====================
+来源：data/SEM/表7-5_SEM路径系数与显著性_新模型.csv
+- NH1: S_environment -> O_cognition, beta=0.3055, p=0.0000
+- NH2: S_service -> O_cognition, beta=0.2433, p=0.0000
+- NH3: S_activity -> O_cognition, beta=0.2525, p=0.0000
+- NH4: O_cognition -> R_intent, beta=0.1468, p=0.0050
+- NH5: S_environment -> R_intent, beta=0.1567, p=0.0015
+- NH6: S_service -> R_intent, beta=0.1841, p=0.0003
+- NH7: S_activity -> R_intent, beta=0.2058, p=0.0001
+
+中介效应（bootstrap）：
+- NH8 indirect=0.0449, p_boot=0.0070, 95%CI=[0.0138,0.0844]
+- NH9 indirect=0.0357, p_boot=0.0070, 95%CI=[0.0110,0.0693]
+- NH10 indirect=0.0371, p_boot=0.0070, 95%CI=[0.0109,0.0705]
+
+====================
+九、你若坚持“C052-C065全部20个矩形口径”的处理建议
+====================
+- 仍建议把 C064 标注为“质控题（不进入SEM）”，不要连到任何潜变量。
+- 真要强行入模，会改变现有模型口径，且你无法与 data/SEM 现有结果一一复现。
