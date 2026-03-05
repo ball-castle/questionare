@@ -81,9 +81,27 @@ def load_points(csv_path: Path) -> list[Point]:
     return points
 
 
-def mean_threshold(points: list[Point]) -> tuple[float, float]:
-    imp = sum(p.importance for p in points) / len(points)
-    sat = sum(p.satisfaction for p in points) / len(points)
+def target_oriented_threshold(points: list[Point]) -> tuple[float, float]:
+    imp_vals = sorted(p.importance for p in points)
+    sat_vals = sorted(p.satisfaction for p in points)
+    n_imp = len(imp_vals)
+    n_sat = len(sat_vals)
+
+    if n_imp % 2:
+        imp = imp_vals[n_imp // 2]
+    else:
+        imp = (imp_vals[n_imp // 2 - 1] + imp_vals[n_imp // 2]) / 2.0
+
+    if n_sat == 1:
+        sat = sat_vals[0]
+    else:
+        h = (n_sat - 1) * 0.75
+        low = int(h)
+        high = low if h.is_integer() else low + 1
+        if low == high:
+            sat = sat_vals[low]
+        else:
+            sat = sat_vals[low] * (high - h) + sat_vals[high] * (h - low)
     return imp, sat
 
 
@@ -138,7 +156,7 @@ def draw_scatter(points: list[Point], imp_th: float, sat_th: float, output: Path
     ax.text(
         x_min + 0.002,
         sat_th + 0.001,
-        f"满意度均值线 = {sat_th:.4f}",
+        f"满意度75分位线 = {sat_th:.4f}",
         fontsize=8.8,
         color="#424242",
         va="bottom",
@@ -146,7 +164,7 @@ def draw_scatter(points: list[Point], imp_th: float, sat_th: float, output: Path
     ax.text(
         imp_th + 0.001,
         y_min + 0.001,
-        f"重要度均值线 = {imp_th:.4f}",
+        f"重要度中位数线 = {imp_th:.4f}",
         fontsize=8.8,
         color="#424242",
         va="bottom",
@@ -273,9 +291,10 @@ def write_audit(
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "source_csv": to_win_path(source_csv),
         "output_dir": to_win_path(audit_path.parent),
+        "threshold_method": "提升导向阈值（重要度中位数 + 满意度75分位）",
         "thresholds": {
-            "importance_mean_line": imp_th,
-            "satisfaction_mean_line": sat_th,
+            "importance_median_line": imp_th,
+            "satisfaction_q75_line": sat_th,
         },
         "point_count": len(points),
         "points": [
@@ -305,7 +324,7 @@ def main() -> None:
     out_audit = out_dir / "IPA_图片生成_audit.json"
 
     points = load_points(source_csv)
-    imp_th, sat_th = mean_threshold(points)
+    imp_th, sat_th = target_oriented_threshold(points)
 
     draw_scatter(points, imp_th, sat_th, out_scatter, dpi=320)
     draw_bar(points, imp_th, sat_th, out_bar, dpi=320)

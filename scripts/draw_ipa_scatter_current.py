@@ -81,10 +81,33 @@ def load_points(csv_path: Path) -> list[Point]:
     return pts
 
 
-def mean_threshold(points: list[Point]) -> tuple[float, float]:
-    imp = sum(p.importance for p in points) / len(points)
-    perf = sum(p.performance for p in points) / len(points)
-    return imp, perf
+def _median(values: list[float]) -> float:
+    vals = sorted(values)
+    n = len(vals)
+    mid = n // 2
+    if n % 2:
+        return vals[mid]
+    return (vals[mid - 1] + vals[mid]) / 2.0
+
+
+def _quantile_linear(values: list[float], q: float) -> float:
+    vals = sorted(values)
+    n = len(vals)
+    if n == 1:
+        return vals[0]
+    h = (n - 1) * q
+    low = int(h)
+    high = low if h.is_integer() else low + 1
+    if low == high:
+        return vals[low]
+    return vals[low] * (high - h) + vals[high] * (h - low)
+
+
+def target_oriented_threshold(points: list[Point]) -> tuple[float, float]:
+    """提升导向IPA阈值：重要度中位数 + 满意度75分位。"""
+    importance_vals = [p.importance for p in points]
+    performance_vals = [p.performance for p in points]
+    return _median(importance_vals), _quantile_linear(performance_vals, 0.75)
 
 
 def classify(importance: float, performance: float, imp_th: float, perf_th: float) -> str:
@@ -138,7 +161,7 @@ def draw_scatter(points: list[Point], imp_th: float, perf_th: float, out_png: Pa
     ax.text(
         x_min + 0.002,
         perf_th + 0.001,
-        f"满意度均值线 = {perf_th:.4f}",
+        f"满意度75分位线 = {perf_th:.4f}",
         fontsize=9,
         color="#424242",
         va="bottom",
@@ -146,7 +169,7 @@ def draw_scatter(points: list[Point], imp_th: float, perf_th: float, out_png: Pa
     ax.text(
         imp_th + 0.001,
         y_min + 0.001,
-        f"重要度均值线 = {imp_th:.4f}",
+        f"重要度中位数线 = {imp_th:.4f}",
         fontsize=9,
         color="#424242",
         va="bottom",
@@ -207,17 +230,20 @@ def write_audit(
     out_bar_png: Path,
     out_json: Path,
 ) -> None:
+    q4_items = [p.item_no for p in points if classify(p.importance, p.performance, imp_th, perf_th) == "Q4_改进区"]
     payload = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "source_csv": "data/data_analysis/_source_analysis/tables/IPA结果表.csv",
+        "threshold_method": "提升导向阈值（重要度中位数 + 满意度75分位）",
         "outputs": {
             "scatter_png": str(out_scatter_png).replace("/", "\\"),
             "bar_png": str(out_bar_png).replace("/", "\\"),
         },
         "thresholds": {
-            "importance_mean": imp_th,
-            "performance_mean": perf_th,
+            "importance_median": imp_th,
+            "performance_q75": perf_th,
         },
+        "q4_item_nos": q4_items,
         "points": [
             {
                 "item_no": p.item_no,
@@ -241,7 +267,7 @@ def main() -> None:
     out_json = out_dir / "IPA_当前数据图片生成_audit.json"
 
     points = load_points(src)
-    imp_th, perf_th = mean_threshold(points)
+    imp_th, perf_th = target_oriented_threshold(points)
     draw_scatter(points, imp_th, perf_th, out_png=out_scatter_png, dpi=320)
     draw_bar(points, imp_th, perf_th, out_png=out_bar_png, dpi=320)
     write_audit(
