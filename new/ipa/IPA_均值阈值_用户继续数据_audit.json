@@ -1,14 +1,14 @@
 {
   "generated_at": "2026-03-05T22:05:03",
   "source": "用户手工提供均值数据（继续修正版）",
-  "threshold_method": "中位数阈值（重要度中位数 + 满意度中位数）",
+  "threshold_method": "均值阈值（重要度均值 + 满意度均值）",
   "thresholds": {
-    "importance_median": 3.7404,
-    "satisfaction_median": 3.6892
+    "importance_mean": 3.7455100000000003,
+    "satisfaction_mean": 3.6826099999999995
   },
   "outputs": {
-    "scatter_png": "new\\ipa\\图7-3_IPA四象限散点图_中位数阈值_用户继续数据.png",
-    "bar_png": "new\\ipa\\图7-2_各文旅属性重要度与表现度均值对比_中位数阈值_用户继续数据.png"
+    "scatter_png": "new\\ipa\\图7-3_IPA四象限散点图_均值阈值_用户继续数据.png",
+    "bar_png": "new\\ipa\\图7-2_各文旅属性重要度与表现度均值对比_均值阈值_用户继续数据.png"
   },
   "points": [
     {
@@ -23,7 +23,7 @@
       "item_text": "环境舒适度与卫生状况",
       "importance": 3.741,
       "satisfaction": 3.6612,
-      "quadrant": "Q4_改进区"
+      "quadrant": "Q3_机会区"
     },
     {
       "item_no": 3,
@@ -58,7 +58,7 @@
       "item_text": "服务专业度与态度",
       "importance": 3.8269,
       "satisfaction": 3.685,
-      "quadrant": "Q4_改进区"
+      "quadrant": "Q1_优势区"
     },
     {
       "item_no": 8,

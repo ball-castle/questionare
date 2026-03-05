@@ -29,12 +29,12 @@ class Point:
 
 POINTS = [
     Point(1, "丰富的中医药文化展示和非遗体验项目", 3.7561, 3.7189),
-    Point(2, "环境舒适度与卫生状况", 3.7410, 3.6667),
+    Point(2, "环境舒适度与卫生状况", 3.7410, 3.6612),
     Point(3, "便捷的交通、充足的停车位", 3.7224, 3.6516),
     Point(4, "亲友推荐/正面评价多", 3.6887, 3.7085),
     Point(5, "特色美食、文创产品的种类及品质", 3.7398, 3.5900),
-    Point(6, "提供个性化中医体质辨识、养生咨询等服务", 3.7642, 3.6940),
-    Point(7, "服务专业度与态度", 3.8269, 3.6950),
+    Point(6, "提供个性化中医体质辨识、养生咨询等服务", 3.7642, 3.6820),
+    Point(7, "服务专业度与态度", 3.8269, 3.6850),
     Point(8, "产品价格与优惠力度", 3.7340, 3.6934),
     Point(9, "中医药服务专业度", 3.7933, 3.6957),
     Point(10, "线上线下宣传推广", 3.6887, 3.7398),
@@ -209,7 +209,7 @@ def write_audit(
 ) -> None:
     payload = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "source": "用户手工提供均值数据（最新修正版）",
+        "source": "用户手工提供均值数据（继续修正版）",
         "threshold_method": "均值阈值（重要度均值 + 满意度均值）",
         "thresholds": {
             "importance_mean": imp_th,
@@ -235,9 +235,9 @@ def write_audit(
 
 def main() -> None:
     out_dir = Path("new/ipa")
-    out_scatter = out_dir / "图7-3_IPA四象限散点图_均值阈值_用户最新数据.png"
-    out_bar = out_dir / "图7-2_各文旅属性重要度与表现度均值对比_均值阈值_用户最新数据.png"
-    out_audit = out_dir / "IPA_均值阈值_用户最新数据_audit.json"
+    out_scatter = out_dir / "图7-3_IPA四象限散点图_均值阈值_用户继续数据.png"
+    out_bar = out_dir / "图7-2_各文旅属性重要度与表现度均值对比_均值阈值_用户继续数据.png"
+    out_audit = out_dir / "IPA_均值阈值_用户继续数据_audit.json"
 
     imp_th, sat_th = mean_threshold(POINTS)
     draw_scatter(POINTS, imp_th, sat_th, out_scatter, dpi=320)
