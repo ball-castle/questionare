@@ -16,8 +16,19 @@ uv sync
 说明：
 
 - 请优先使用 `uv run ...` 执行命令。
+- 本仓库依赖安装在项目本地虚拟环境 `.venv/` 中。
 - 系统自带 `python` 不保证已经安装本项目依赖。
+- 如果直接执行 `python ...`，很可能会落到 Conda 或系统 Python，而不是 `.venv`。
+- 可用 `uv run python -c "import sys; print(sys.executable)"` 检查当前实际解释器。
+- 如需手动激活环境，Windows PowerShell 下使用 `.\.venv\Scripts\Activate.ps1`。
 - 本地输入数据请放在 `data/` 目录，仓库默认不跟踪该目录下的真实数据文件。
+
+常见现象：
+
+- `uv run python ...` 可以导入 `pandas/scipy/matplotlib`
+- 但直接 `python ...` 报 `ModuleNotFoundError`
+
+这通常不是依赖没装，而是当前终端没有进入本项目的 `.venv`。
 
 ## Unified CLI
 
