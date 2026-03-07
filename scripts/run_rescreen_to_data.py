@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from qp_io import read_xlsx_first_sheet
-from run_questionnaire_analysis_v2 import QUALITY_PROFILE_BALANCED, run_isolated
+from run_questionnaire_analysis import QUALITY_PROFILE_BALANCED, run_analysis
 
 
 def detect_input_format(xlsx: Path) -> str:
@@ -51,7 +51,7 @@ def main() -> None:
     input_format = detect_input_format(input_xlsx)
     with tempfile.TemporaryDirectory(prefix="qp_rescreen_") as tmp:
         tmp_out = Path(tmp) / "analysis_output"
-        run_isolated(input_xlsx=input_xlsx, input_format=input_format, output_dir=tmp_out, quality_profile=args.quality_profile)
+        run_analysis(input_xlsx=input_xlsx, input_format=input_format, output_dir=tmp_out, quality_profile=args.quality_profile)
 
         mapping = {
             tmp_out / "tables" / "survey_raw.csv": out_dir / "survey_raw_961.csv",

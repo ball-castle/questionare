@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
-"""本脚本用于执行优化版聚类分析并输出画像与评估结果。"""
+"""执行聚类分析并输出画像与评估结果。"""
 
 import argparse
 import csv
 import json
 from datetime import datetime
 from pathlib import Path
-
-import numpy as np
-from scipy.cluster.hierarchy import fcluster, linkage
-from scipy.cluster.vq import kmeans2
-from scipy.optimize import linear_sum_assignment
-from scipy.spatial.distance import cdist
-from scipy.stats import chi2_contingency, kruskal
 
 from qp_io import write_dict_csv, write_rows_csv
 
@@ -32,8 +25,28 @@ VISITED_CODE = 1
 UNVISITED_CODE = 2
 
 
+def _load_dependencies() -> None:
+    global np, fcluster, linkage, kmeans2, linear_sum_assignment, cdist, chi2_contingency, kruskal
+
+    import numpy as np_module
+    from scipy.cluster.hierarchy import fcluster as fcluster_fn, linkage as linkage_fn
+    from scipy.cluster.vq import kmeans2 as kmeans2_fn
+    from scipy.optimize import linear_sum_assignment as linear_sum_assignment_fn
+    from scipy.spatial.distance import cdist as cdist_fn
+    from scipy.stats import chi2_contingency as chi2_contingency_fn, kruskal as kruskal_fn
+
+    np = np_module
+    fcluster = fcluster_fn
+    linkage = linkage_fn
+    kmeans2 = kmeans2_fn
+    linear_sum_assignment = linear_sum_assignment_fn
+    cdist = cdist_fn
+    chi2_contingency = chi2_contingency_fn
+    kruskal = kruskal_fn
+
+
 def parse_args():
-    parser = argparse.ArgumentParser(description="Run optimized clustering v3.")
+    parser = argparse.ArgumentParser(description="Run clustering analysis.")
     parser.add_argument(
         "--input-csv",
         default=str(INPUT_CLEAN),
@@ -836,6 +849,7 @@ def main():
     global INPUT_CLEAN, OUT_DIR, SEED
 
     args = parse_args()
+    _load_dependencies()
     INPUT_CLEAN = Path(args.input_csv)
     OUT_DIR = Path(args.output_dir)
     SEED = int(args.seed)

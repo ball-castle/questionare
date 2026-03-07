@@ -80,7 +80,7 @@ def main() -> None:
         "analysis",
         [
             py,
-            str(root / "run_questionnaire_analysis_v2.py"),
+            str(root / "run_questionnaire_analysis.py"),
             "--input-xlsx",
             str(input_xlsx),
             "--input-format",
@@ -96,7 +96,7 @@ def main() -> None:
         "boosters",
         [
             py,
-            str(root / "generate_award_boosters_v2.py"),
+            str(root / "generate_award_boosters.py"),
             "--tables-dir",
             str(output_dir / "tables"),
             "--output-dir",

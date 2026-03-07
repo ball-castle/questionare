@@ -12,8 +12,8 @@ COMMANDS: dict[str, tuple[Path, str]] = {
     "pipeline": (ROOT / "scripts" / "run_current_pipeline.py", "运行主分析流程"),
     "rescreen-880": (ROOT / "scripts" / "run_rescreen_to_data.py", "执行 961 -> 880 重筛"),
     "reliability-880": (ROOT / "scripts" / "run_reliability_validity_880.py", "运行 880 样本信效度分析"),
-    "logit": (ROOT / "scripts" / "run_logit_improved_v5.py", "运行 Logit 建模"),
-    "clustering": (ROOT / "scripts" / "run_clustering_optimized_v3.py", "运行聚类分析"),
+    "logit": (ROOT / "scripts" / "run_logit.py", "运行 Logit 建模"),
+    "clustering": (ROOT / "scripts" / "run_clustering.py", "运行聚类分析"),
     "sem": (ROOT / "scripts" / "run_sem.py", "运行结构方程模型分析"),
 }
 

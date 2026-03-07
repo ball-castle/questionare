@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""本脚本用于执行改进版Logit建模并输出稳健性结果。"""
+"""执行 Logit 建模并输出稳健性结果。"""
 
 from __future__ import annotations
 
@@ -9,18 +9,6 @@ import re
 import warnings
 from datetime import date
 from pathlib import Path
-
-import numpy as np
-import pandas as pd
-import statsmodels.formula.api as smf
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, average_precision_score, brier_score_loss, log_loss, roc_auc_score
-from sklearn.model_selection import StratifiedKFold, cross_val_predict
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder
-from statsmodels.tools.sm_exceptions import ConvergenceWarning
 
 from qp_io import read_xlsx_first_sheet
 
@@ -33,8 +21,50 @@ TARGET_Q20 = "y_q20_high"
 TARGET_Q21 = "y_q21_high"
 
 
+def _load_dependencies() -> None:
+    global np, pd, smf
+    global ColumnTransformer, SimpleImputer, LogisticRegression
+    global accuracy_score, average_precision_score, brier_score_loss, log_loss, roc_auc_score
+    global StratifiedKFold, cross_val_predict, Pipeline, OneHotEncoder, ConvergenceWarning
+
+    import numpy as np_module
+    import pandas as pd_module
+    import statsmodels.formula.api as smf_module
+    from sklearn.compose import ColumnTransformer as ColumnTransformer_cls
+    from sklearn.impute import SimpleImputer as SimpleImputer_cls
+    from sklearn.linear_model import LogisticRegression as LogisticRegression_cls
+    from sklearn.metrics import (
+        accuracy_score as accuracy_score_fn,
+        average_precision_score as average_precision_score_fn,
+        brier_score_loss as brier_score_loss_fn,
+        log_loss as log_loss_fn,
+        roc_auc_score as roc_auc_score_fn,
+    )
+    from sklearn.model_selection import StratifiedKFold as StratifiedKFold_cls, cross_val_predict as cross_val_predict_fn
+    from sklearn.pipeline import Pipeline as Pipeline_cls
+    from sklearn.preprocessing import OneHotEncoder as OneHotEncoder_cls
+    from statsmodels.tools.sm_exceptions import ConvergenceWarning as ConvergenceWarning_cls
+
+    np = np_module
+    pd = pd_module
+    smf = smf_module
+    ColumnTransformer = ColumnTransformer_cls
+    SimpleImputer = SimpleImputer_cls
+    LogisticRegression = LogisticRegression_cls
+    accuracy_score = accuracy_score_fn
+    average_precision_score = average_precision_score_fn
+    brier_score_loss = brier_score_loss_fn
+    log_loss = log_loss_fn
+    roc_auc_score = roc_auc_score_fn
+    StratifiedKFold = StratifiedKFold_cls
+    cross_val_predict = cross_val_predict_fn
+    Pipeline = Pipeline_cls
+    OneHotEncoder = OneHotEncoder_cls
+    ConvergenceWarning = ConvergenceWarning_cls
+
+
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run improved Logit v5 and export to data/data_logit3.")
+    parser = argparse.ArgumentParser(description="Run Logit analysis and export artifacts.")
     parser.add_argument("--input-csv", default="data/data_analysis/_source_analysis/tables/survey_clean.csv", help="Model-ready sample file.")
     parser.add_argument("--source-xlsx", default="data/叶开泰问卷数据.xlsx", help="Raw xlsx for header mapping.")
     parser.add_argument("--output-dir", default="data/data_logit3", help="Output directory.")
@@ -408,6 +438,7 @@ def write_model_note(
 
 def main() -> None:
     args = parse_args()
+    _load_dependencies()
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -546,7 +577,7 @@ def main() -> None:
         "random_state": int(args.random_state),
     }
     (out_dir / "run_metadata.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"logit_improved_v5_done: {out_dir}")
+    print(f"logit_done: {out_dir}")
 
 
 if __name__ == "__main__":
