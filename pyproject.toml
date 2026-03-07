@@ -1,9 +1,14 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "questionare-processiong"
-version = "0.1.0"
-description = "问卷数据分析、建模与 SEM 管线"
+name = "questionnaire-analysis"
+version = "0.2.0"
+description = "Questionnaire data analysis, modeling, clustering, and SEM pipeline"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
 dependencies = [
     "lightgbm>=4.6.0",
     "matplotlib>=3.10.8",
@@ -11,7 +16,18 @@ dependencies = [
     "openpyxl>=3.1.5",
     "pandas>=3.0.1",
     "pingouin>=0.6.0",
+    "scikit-learn>=1.5.0",
     "scipy>=1.17.0",
     "semopy>=2.3,<3",
+    "statsmodels>=0.14.0",
     "xgboost>=3.2.0",
 ]
+
+[project.scripts]
+questionnaire-analysis = "questionnaire_analysis.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]

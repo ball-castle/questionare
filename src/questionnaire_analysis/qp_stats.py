@@ -225,3 +225,4 @@ def assign_cluster_names(rows):
     for c in ids:
         out.setdefault(c, "轻度打卡观光型")
     return out
+

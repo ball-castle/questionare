@@ -1,0 +1,9 @@
+{
+  "generated_at_utc": "2026-03-07T00:00:00+00:00",
+  "source_pipeline": "demo_bundle",
+  "input_format": "synthetic_demo",
+  "n_samples": 3,
+  "remain_n_revised": 3,
+  "invalid_n_revised": 0,
+  "notes": "Synthetic demo output for repository verification only."
+}

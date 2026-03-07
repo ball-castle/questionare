@@ -12,8 +12,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from qp_io import read_xlsx_first_sheet, numeric_matrix, write_dict_csv, write_rows_csv, fmt
-from qp_stats import cronbach_alpha, kmo_bartlett, freq_table, crosstab, run_mca, logistic_fit, two_stage_cluster, assign_cluster_names
+from .qp_io import read_xlsx_first_sheet, numeric_matrix, write_dict_csv, write_rows_csv, fmt
+from .qp_stats import cronbach_alpha, kmo_bartlett, freq_table, crosstab, run_mca, logistic_fit, two_stage_cluster, assign_cluster_names
 
 # Global plotting config for Chinese rendering.
 plt.rcParams["font.sans-serif"] = ["Microsoft YaHei", "SimHei", "SimSun"]
@@ -965,3 +965,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

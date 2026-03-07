@@ -1,0 +1,4 @@
+Questionnaire Analysis Demo Output
+
+This sample bundle is generated from synthetic records.
+It is included only to document the artifact layout.

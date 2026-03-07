@@ -1,6 +1,11 @@
 # Scripts Core
 
-## 公开入口脚本
+## 正式代码位置
+
+- `src/questionnaire_analysis/`: 当前维护的正式包代码。
+- `main.py`: 仓库根兼容入口，会转发到包内 CLI。
+
+## 公开入口脚本（兼容 wrapper）
 
 - `scripts/run_current_pipeline.py`: 运行主分析流程，串联问卷分析与补强表生成。
 - `scripts/run_rescreen_to_data.py`: 执行 `961 -> 880` 样本重筛并固化核心产物。
@@ -11,13 +16,15 @@
 - `scripts/run_questionnaire_analysis.py`: 统一问卷分析入口，兼容 64/108 列输入。
 - `scripts/generate_award_boosters.py`: 统一国奖补强入口，支持自定义路径。
 
+这些文件当前只保留兼容层逻辑，实际实现位于 `src/questionnaire_analysis/`。
+
 ## 内部共享模块
 
-- `scripts/qp_io.py`: XLSX/CSV 读写与通用格式化工具。
-- `scripts/qp_stats.py`: 信效度、Logit、聚类等基础统计函数。
-- `scripts/convert_961_to_108.py`: 64 列问卷到 108 列标准结构的转换与审计。
-- `scripts/questionnaire_analysis_core.py`: 问卷主分析核心实现。
-- `scripts/award_booster_core.py`: 国奖补强表生成核心实现。
+- `src/questionnaire_analysis/qp_io.py`: XLSX/CSV 读写与通用格式化工具。
+- `src/questionnaire_analysis/qp_stats.py`: 信效度、Logit、聚类等基础统计函数。
+- `src/questionnaire_analysis/convert_961_to_108.py`: 64 列问卷到 108 列标准结构的转换与审计。
+- `src/questionnaire_analysis/questionnaire_analysis_core.py`: 问卷主分析核心实现。
+- `src/questionnaire_analysis/award_booster_core.py`: 国奖补强表生成核心实现。
 
 ## 不再维护脚本
 

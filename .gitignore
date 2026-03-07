@@ -20,6 +20,7 @@ wheels/
 
 # Local outputs
 output/
+demo-output/
 output_smoke/
 output_data_analysis/
 

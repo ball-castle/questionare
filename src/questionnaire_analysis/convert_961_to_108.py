@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Sequence, Tuple
 
-from qp_io import write_dict_csv
+from .qp_io import write_dict_csv
 
 
 def _norm(s: str) -> str:
@@ -445,3 +445,4 @@ def export_conversion_artifacts(out_dir: Path, result: ConversionResult) -> None
         result.unknown_rows,
     )
     (out_dir / "conversion_audit.json").write_text(json.dumps(result.audit, ensure_ascii=False, indent=2), encoding="utf-8")
+
