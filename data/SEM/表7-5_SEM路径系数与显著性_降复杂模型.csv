@@ -1,8 +1,0 @@
-﻿假设,路径,标准化系数β,p值,结论,状态,备注
-RH1,S_env -> O_cognition,0.3056,0.0000,支持,ready,降复杂度模型（R_sum观测合成）
-RH2,S_service -> O_cognition,0.2430,0.0000,支持,ready,降复杂度模型（R_sum观测合成）
-RH3,S_activity -> O_cognition,0.2524,0.0000,支持,ready,降复杂度模型（R_sum观测合成）
-RH4,O_cognition -> R_sum,0.1224,0.0065,支持,ready,降复杂度模型（R_sum观测合成）
-RH5,S_env -> R_sum,0.1365,0.0013,支持,ready,降复杂度模型（R_sum观测合成）
-RH6,S_service -> R_sum,0.1587,0.0002,支持,ready,降复杂度模型（R_sum观测合成）
-RH7,S_activity -> R_sum,0.1789,0.0001,支持,ready,降复杂度模型（R_sum观测合成）

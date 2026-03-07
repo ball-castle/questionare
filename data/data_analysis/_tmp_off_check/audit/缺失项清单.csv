@@ -1,5 +1,0 @@
-﻿item_id,output_path,source_path,pending_reason
-table_7_4,data/data_analysis/_tmp_off_check/tables/表7-4_SEM模型拟合指标_待补.csv,,SEM结果缺失（按策略保留待补）
-table_7_5,data/data_analysis/_tmp_off_check/tables/表7-5_SEM路径系数与显著性_待补.csv,,SEM路径结果缺失（按策略保留待补）
-table_7_9,data/data_analysis/_tmp_off_check/tables/表7-9_专家意见整合框架_待补.csv,,专家访谈材料缺失（按策略保留待补）
-fig_6_1_age_gender,data/data_analysis/_tmp_off_check/figures/年龄段人数_性别堆叠图.png,data/data_analysis/_source_analysis/figures/年龄段人数_性别堆叠图.png,源图缺失

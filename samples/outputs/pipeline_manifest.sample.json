@@ -1,0 +1,28 @@
+{
+  "pipeline": "current_single_track",
+  "started_at": "2026-03-07T00:00:00+00:00",
+  "input_xlsx": "data/example.xlsx",
+  "input_format": "amethyst_108",
+  "quality_profile": "balanced_v20260221",
+  "output_dir": "output",
+  "status": "ok",
+  "steps": [
+    {
+      "step": "analysis",
+      "status": "ok"
+    },
+    {
+      "step": "boosters",
+      "status": "ok"
+    }
+  ],
+  "key_outputs": [
+    "output/问卷数据处理与分析_结果摘要.txt",
+    "output/tables/survey_clean.csv",
+    "output/tables/信度分析表.csv",
+    "output/tables/效度分析表.csv",
+    "output/tables/建议落地行动矩阵.csv",
+    "output/run_metadata.json",
+    "output/pipeline_manifest.json"
+  ]
+}

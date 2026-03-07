@@ -1,3 +1,0 @@
-﻿respondent_id,quality_profile,duration_lt90_flag,severe_straightline_flag,attention_conditional_flag,logic_branch_flag,key_missing_flag,open_gibberish_flag,duplicate_flag,invalid_union_flag,duration_sec,q8_text,q14_text,q15_text,attention_text,ip,open_text
-814,balanced_v20260221,0,0,0,0,0,1,0,1,,,,,,,/
-858,balanced_v20260221,0,1,0,0,0,1,0,1,,,,,,,1

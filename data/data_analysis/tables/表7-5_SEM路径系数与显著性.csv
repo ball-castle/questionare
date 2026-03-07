@@ -1,9 +1,0 @@
-﻿假设,路径,标准化系数β,p值,结论,状态,备注
-H1,S_env -> O_cognition,0.2754,0.0000,支持,ready,直接路径（标准化系数）
-H2,S_service -> O_cognition,0.3471,0.0000,支持,ready,直接路径（标准化系数）
-H3,S_activity -> O_cognition,0.2192,0.0000,支持,ready,直接路径（标准化系数）
-H4,O_cognition -> R_visit,-0.3760,0.0000,不支持,ready,直接路径（标准化系数）
-H5,O_cognition -> R_recommend,-0.3360,0.0000,不支持,ready,直接路径（标准化系数）
-H6,S_env -> O -> R,indirect=-0.1036,"p_boot=0.0000;95%CI=[-0.1467,-0.0656]",中介显著,ready,bootstrap=2000;success=2000;fail=0
-H7,S_service -> O -> R,indirect=-0.1166,"p_boot=0.0000;95%CI=[-0.1837,-0.0644]",中介显著,ready,bootstrap=2000;success=2000;fail=0
-H8,S_activity -> O -> R,indirect=-0.0736,"p_boot=0.0000;95%CI=[-0.1135,-0.0381]",中介显著,ready,bootstrap=2000;success=2000;fail=0

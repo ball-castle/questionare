@@ -1,6 +1,0 @@
-﻿type,segment,n,share_pct,imbalance_risk,action_hint
-hard_cluster,C1,182,20.681818181818183,正常,按常规节奏执行
-hard_cluster,C2,698,79.31818181818183,偏高,该簇执行分层触达上限，避免资源过度集中
-soft_segment,高亲和C1_价格权益型,264,30.0,正常,可直接用于AB分层投放
-soft_segment,高亲和C2_文化深度型,264,30.0,正常,可直接用于AB分层投放
-soft_segment,灰区_待探索,352,40.0,正常,可直接用于AB分层投放
