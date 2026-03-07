@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""本脚本用于执行优化版聚类分析并输出画像与评估结果。"""
+
+import argparse
 import csv
 import json
 from datetime import datetime
@@ -27,6 +30,27 @@ FINAL_K_MAIN = 2
 FINAL_K_APPENDIX = 4
 VISITED_CODE = 1
 UNVISITED_CODE = 2
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Run optimized clustering v3.")
+    parser.add_argument(
+        "--input-csv",
+        default=str(INPUT_CLEAN),
+        help="Path to cleaned survey csv.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default=str(OUT_DIR),
+        help="Directory for clustering outputs.",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=SEED,
+        help="Random seed for clustering routines.",
+    )
+    return parser.parse_args()
 
 
 def to_float(v):
@@ -167,7 +191,8 @@ def db_index(x, labels):
     return float(np.mean(np.max(r, axis=1)))
 
 
-def run_cluster_for_k(x, k, seed=SEED):
+def run_cluster_for_k(x, k, seed=None):
+    seed = SEED if seed is None else seed
     np.random.seed(seed)
     z = linkage(x, method="ward")
     h = fcluster(z, k, criterion="maxclust")
@@ -808,6 +833,13 @@ def imbalance_action_rows(labels, soft_summary):
 
 
 def main():
+    global INPUT_CLEAN, OUT_DIR, SEED
+
+    args = parse_args()
+    INPUT_CLEAN = Path(args.input_csv)
+    OUT_DIR = Path(args.output_dir)
+    SEED = int(args.seed)
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     data_all = read_numeric_csv(INPUT_CLEAN)
     ids_all = data_all["respondent_id"]

@@ -1,77 +1,86 @@
-## Current Pipeline (Single Track)
+# Questionnaire Analysis Pipeline
 
-This project runs on a single official data source:
+本仓库是一个 analysis-only 的 Python 项目，保留问卷数据清洗、统计分析、建模、聚类与 SEM 脚本，不包含文档生成链路，也不提交原始问卷数据和批量生成结果。
 
-- `data/raw/数据.xlsx`
-- `docs/待填数据.docx`
+## Environment
 
-Main pipeline command (default output directory: `output`):
+- Python `3.13`
+- dependency manager: `uv`
 
-```bash
-uv run python scripts/run_current_pipeline.py --input-xlsx data/raw/数据.xlsx --doc-path docs/待填数据.docx
-```
-
-Rescreen-only command (persist `961->880` core artifacts to `data/processed_880`):
+安装依赖：
 
 ```bash
-uv run python scripts/run_rescreen_to_data.py
+uv sync
 ```
 
-Reliability/validity-only command (on `data/processed_880/survey_clean_880.csv`, output to `output_data_analysis`):
+说明：
+
+- 请优先使用 `uv run ...` 执行命令。
+- 系统自带 `python` 不保证已经安装本项目依赖。
+- 本地输入数据请放在 `data/` 目录，仓库默认不跟踪该目录下的真实数据文件。
+
+## Unified CLI
+
+查看统一入口帮助：
 
 ```bash
-uv run python scripts/run_reliability_validity_880.py
+uv run python main.py --help
 ```
 
-With chapter 6/7 report generation enabled:
+主流程：
 
 ```bash
-uv run python scripts/run_current_pipeline.py --input-xlsx data/raw/数据.xlsx --doc-path docs/待填数据.docx --build-report
+uv run python main.py pipeline --input-xlsx data/叶开泰问卷数据.xlsx
 ```
 
-Pipeline sequence:
+880 样本重筛：
 
-1. questionnaire analysis
-2. award booster tables
-3. pending doc fill
-4. pending doc consistency check
-5. chapter 6/7 report generation (optional, enabled by `--build-report`)
+```bash
+uv run python main.py rescreen-880 --input-xlsx data/叶开泰问卷数据.xlsx --force
+```
 
-Main outputs:
+880 样本信效度：
+
+```bash
+uv run python main.py reliability-880 --force
+```
+
+Logit：
+
+```bash
+uv run python main.py logit --input-csv data/data_analysis/_source_analysis/tables/survey_clean.csv
+```
+
+聚类：
+
+```bash
+uv run python main.py clustering --input-csv data/data_analysis/_source_analysis/tables/survey_clean.csv
+```
+
+SEM：
+
+```bash
+uv run python main.py sem --input-file data/问卷数据_cleaned_for_SEM.xlsx
+```
+
+## Main Outputs
+
+主流程默认输出到 `output/`，核心产物包括：
 
 - `output/问卷数据处理与分析_结果摘要.txt`
-- `output/tables/待填数据_回填值清单.csv`
-- `output/tables/待填数据_待补项清单.csv`
-- `output/tables/待填数据_一致性核查报告.csv`
+- `output/tables/survey_clean.csv`
+- `output/tables/信度分析表.csv`
+- `output/tables/效度分析表.csv`
+- `output/tables/建议落地行动矩阵.csv`
 - `output/pipeline_manifest.json`
 
-Report outputs:
+`run_rescreen_to_data.py` 和 `run_reliability_validity_880.py` 默认幂等；关键产物已存在时会输出 `skipped`，需要覆盖时加 `--force`。
 
-- `output/reports/六七部分_完整报告.md`
-- `output/reports/六七部分_完整报告.docx`
-- `output/reports/六七章_证据索引.csv`
-- `output/reports/六七章_生成日志.json`
-- `output/reports/六七部分_输入核查报告.json`
+## Repository Layout
 
-Standalone report commands:
-
-- Prepare only (input audit):
-
-```bash
-uv run python scripts/generate_ch6_ch7_report.py --prepare-only
-```
-
-- Generate report:
-
-```bash
-uv run python scripts/generate_ch6_ch7_report.py
-```
-
-Notes:
-
-- Default outline path: project root `六七大纲.md`
-- Missing input behavior default: `--missing-policy keep_placeholder`
-- Auto migration is enabled by default: when `output_report/` does not exist but `output_current/` exists, report command copies `output_current -> output_report` before audit/generation.
-- `run_rescreen_to_data.py` and `run_reliability_validity_880.py` default to idempotent mode: if key outputs already exist, they print `skipped` and do nothing.
-- Add `--force` to either script to overwrite existing artifacts.
+- `main.py`: 统一 CLI 分发入口
+- `scripts/`: 核心分析脚本与内部模块
+- `docs/scripts-core.md`: 当前保留脚本说明
+- `samples/`: 非行级、非原始数据的样例输出
+- `data/README.md`: 本地数据放置说明
 

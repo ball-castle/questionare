@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert new 961-row textual questionnaire format into 108-column coded format."""
+"""本脚本用于将961版问卷字段映射为108列标准结构并记录转换审计。"""
 
 from __future__ import annotations
 

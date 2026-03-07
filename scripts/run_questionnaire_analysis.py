@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""本脚本用于执行问卷主分析并输出清洗、统计、模型与建议表。"""
+
 import json
 import re
 import textwrap

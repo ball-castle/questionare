@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Improved Logit workflow aligned with 改进方案5（更换假设）.
-
-Hypothesis chain:
-H: 认同“游览可提升对中医药+文旅理解”（C088）越强，游览意愿（Q20/C090）越高；
-且游览意愿显著提升推荐意愿（Q21/C091），同时C088对Q21可能存在直接效应。
-"""
+"""本脚本用于执行改进版Logit建模并输出稳健性结果。"""
 
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run SEM with legacy/new model suite and export compatible + improved outputs."""
+"""本脚本用于执行结构方程模型估计并导出路径与拟合结果。"""
 
 from __future__ import annotations
 

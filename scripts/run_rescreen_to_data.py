@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run 961->880 rescreen pipeline and persist core artifacts under data/processed_880."""
+"""本脚本用于执行961到880样本重筛并固化核心数据产物。"""
 
 from __future__ import annotations
 

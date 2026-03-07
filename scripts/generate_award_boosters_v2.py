@@ -1,28 +1,16 @@
 #!/usr/bin/env python3
-"""Run award-booster generation with configurable input/output directories."""
+"""本脚本用于以可配置路径运行国奖补强产物生成流程。"""
 
 from __future__ import annotations
 
 import argparse
-import importlib.util
 from pathlib import Path
 
 
 def _load_base_module():
-    try:
-        import generate_award_boosters as m  # type: ignore
+    import generate_award_boosters as m  # type: ignore
 
-        return m
-    except Exception:
-        p = Path(__file__).resolve().parent.parent / "archive_legacy" / "scripts" / "generate_award_boosters.py"
-        if not p.exists():
-            raise
-        spec = importlib.util.spec_from_file_location("generate_award_boosters_legacy", p)
-        if spec is None or spec.loader is None:
-            raise RuntimeError(f"Failed to load legacy module spec: {p}")
-        m = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(m)
-        return m
+    return m
 
 
 def parse_args() -> argparse.Namespace:

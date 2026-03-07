@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Single-track current pipeline for data.xlsx."""
+"""本脚本用于运行纯分析主流程并串联分析与补强步骤。"""
 
 from __future__ import annotations
 
@@ -42,20 +42,9 @@ def detect_input_format(xlsx: Path) -> str:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run current single-track questionnaire pipeline.")
+    parser = argparse.ArgumentParser(description="Run functional questionnaire pipeline (analysis + boosters).")
     parser.add_argument("--input-xlsx", required=True, help="Path to input questionnaire xlsx.")
-    parser.add_argument("--doc-path", required=True, help="Path to pending docx for fill/check.")
     parser.add_argument("--output-dir", default="output", help="Output directory.")
-    parser.add_argument(
-        "--build-report",
-        action="store_true",
-        help="Whether to generate chapter 6/7 integrated report (markdown + docx) under <output-dir>/reports.",
-    )
-    parser.add_argument(
-        "--report-outline-md",
-        default=None,
-        help="Optional override for chapter 6/7 outline markdown path; default <project-root>/六七大纲.md.",
-    )
     parser.add_argument(
         "--quality-profile",
         default="balanced_v20260221",
@@ -71,7 +60,6 @@ def main() -> None:
     py = sys.executable
 
     input_xlsx = Path(args.input_xlsx)
-    doc_path = Path(args.doc_path)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "tables").mkdir(parents=True, exist_ok=True)
@@ -84,7 +72,6 @@ def main() -> None:
         "input_xlsx": str(input_xlsx),
         "input_format": input_format,
         "quality_profile": args.quality_profile,
-        "doc_path": str(doc_path),
         "output_dir": str(output_dir),
         "steps": [],
     }
@@ -117,79 +104,18 @@ def main() -> None:
         ],
         manifest,
     )
-    run_step(
-        "fill_pending_doc",
-        [
-            py,
-            str(root / "fill_pending_doc_v2.py"),
-            "--doc-path",
-            str(doc_path),
-            "--tables-dir",
-            str(output_dir / "tables"),
-            "--output-dir",
-            str(output_dir),
-        ],
-        manifest,
-    )
-    run_step(
-        "check_pending_doc_consistency",
-        [
-            py,
-            str(root / "check_pending_doc_consistency_v2.py"),
-            "--doc-path",
-            str(doc_path),
-            "--raw-xlsx",
-            str(input_xlsx),
-            "--tables-dir",
-            str(output_dir / "tables"),
-            "--output-dir",
-            str(output_dir),
-        ],
-        manifest,
-    )
-
-    if args.build_report:
-        report_outline = Path(args.report_outline_md) if args.report_outline_md else (root.parent / "六七大纲.md")
-        run_step(
-            "report_generation",
-            [
-                py,
-                str(root / "generate_ch6_ch7_report.py"),
-                "--outline-md",
-                str(report_outline),
-                "--tables-dir",
-                str(output_dir / "tables"),
-                "--figures-dir",
-                str(output_dir / "figures"),
-                "--output-dir",
-                str(output_dir / "reports"),
-                "--base-name",
-                "六七部分_完整报告",
-                "--missing-policy",
-                "keep_placeholder",
-            ],
-            manifest,
-        )
 
     manifest["finished_at"] = now_iso()
     manifest["status"] = "ok"
     manifest["key_outputs"] = [
         str(output_dir / "问卷数据处理与分析_结果摘要.txt"),
-        str(output_dir / "tables" / "待填数据_回填值清单.csv"),
-        str(output_dir / "tables" / "待填数据_待补项清单.csv"),
-        str(output_dir / "tables" / "待填数据_一致性核查报告.csv"),
+        str(output_dir / "tables" / "survey_clean.csv"),
+        str(output_dir / "tables" / "信度分析表.csv"),
+        str(output_dir / "tables" / "效度分析表.csv"),
+        str(output_dir / "tables" / "建议落地行动矩阵.csv"),
+        str(output_dir / "run_metadata.json"),
         str(output_dir / "pipeline_manifest.json"),
     ]
-    if args.build_report:
-        manifest["key_outputs"].extend(
-            [
-                str(output_dir / "reports" / "六七部分_完整报告.md"),
-                str(output_dir / "reports" / "六七部分_完整报告.docx"),
-                str(output_dir / "reports" / "六七章_证据索引.csv"),
-                str(output_dir / "reports" / "六七章_生成日志.json"),
-                str(output_dir / "reports" / "六七部分_输入核查报告.json"),
-            ]
-        )
 
     (output_dir / "pipeline_manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"current_pipeline_done: out={output_dir}")

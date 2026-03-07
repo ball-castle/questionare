@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Run questionnaire analysis into an isolated output directory for two input formats."""
+"""本脚本用于兼容64列与108列输入并封装隔离分析流程。"""
 
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import os
 import re
@@ -21,20 +20,9 @@ QUALITY_PROFILE_BALANCED = "balanced_v20260221"
 
 
 def _load_base_module():
-    try:
-        import run_questionnaire_analysis as m  # type: ignore
+    import run_questionnaire_analysis as m  # type: ignore
 
-        return m
-    except Exception:
-        p = Path(__file__).resolve().parent.parent / "archive_legacy" / "scripts" / "run_questionnaire_analysis.py"
-        if not p.exists():
-            raise
-        spec = importlib.util.spec_from_file_location("run_questionnaire_analysis_legacy", p)
-        if spec is None or spec.loader is None:
-            raise RuntimeError(f"Failed to load legacy module spec: {p}")
-        m = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(m)
-        return m
+    return m
 
 
 def _default_audit(n_rows: int) -> dict:

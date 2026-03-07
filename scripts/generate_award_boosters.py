@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate 'national-award style' booster artifacts for questionnaire analysis."""
+"""本脚本用于生成国奖补强所需的数据表与文字说明。"""
 
 import csv
 import json

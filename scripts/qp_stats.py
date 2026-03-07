@@ -1,3 +1,5 @@
+"""本脚本用于提供问卷分析所需的统计计算与聚类基础函数。"""
+
 import math
 from collections import Counter
 

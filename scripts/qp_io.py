@@ -1,3 +1,5 @@
+"""本脚本用于读取问卷表格并提供CSV与XLSX通用I/O工具函数。"""
+
 import csv
 import re
 import zipfile

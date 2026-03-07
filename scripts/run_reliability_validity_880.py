@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compute reliability/validity on the 880 clean sample and write to output_data_analysis."""
+"""本脚本用于对880样本执行信度与效度分析。"""
 
 from __future__ import annotations
 
